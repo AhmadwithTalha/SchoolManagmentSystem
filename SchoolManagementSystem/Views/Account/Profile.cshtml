@@ -1,0 +1,13 @@
+﻿@model SchoolManagementSystem.Models.ApplicationUser
+
+<h2>My Profile</h2>
+
+<div>
+    <img src="~/images/@Model.ProfileImage" width="150" />
+</div>
+<div>
+    <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Phone:</strong> @Model.PhoneNumber</p>
+    <p><strong>Address:</strong> @Model.Address, @Model.City, @Model.Country</p>
+</div>

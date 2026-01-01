@@ -1,0 +1,6 @@
+﻿namespace SchoolManagementSystem.wwwroot.images
+{
+    public class default_user
+    {
+    }
+}
