@@ -31,22 +31,44 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Create uploads folder if it doesn't exist
+            // Create uploads folder if not exist
             string uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
-            // Save image
-            string uniqueFileName = Guid.NewGuid() + Path.GetExtension(model.ProfileImageFile.FileName);
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            string profileFileName = string.Empty;
+
+            // Save file upload if present
+            if (model.ProfileImageFile != null)
             {
-                await model.ProfileImageFile.CopyToAsync(fileStream);
+                profileFileName = Guid.NewGuid() + Path.GetExtension(model.ProfileImageFile.FileName);
+                string uploadPath = Path.Combine(uploadsFolder, profileFileName);
+                using (var fileStream = new FileStream(uploadPath, FileMode.Create))
+                {
+                    await model.ProfileImageFile.CopyToAsync(fileStream);
+                }
+            }
+            if (model.ProfileImageFile == null && string.IsNullOrEmpty(model.ProfileImageBase64))
+            {
+                ModelState.AddModelError("", "Profile image is required (either upload or capture).");
+                return View(model);
+            }
+
+            // Save base64 image if present (live webcam)
+            if (!string.IsNullOrEmpty(model.ProfileImageBase64))
+            {
+                string base64 = model.ProfileImageBase64.Split(',')[1];
+                byte[] bytes = Convert.FromBase64String(base64);
+                string base64FileName = Guid.NewGuid() + ".png";
+                string base64FilePath = Path.Combine(uploadsFolder, base64FileName);
+                await System.IO.File.WriteAllBytesAsync(base64FilePath, bytes);
+                profileFileName = base64FileName;
             }
 
             // Create user
@@ -61,7 +83,8 @@ namespace SchoolManagementSystem.Controllers
                 Country = model.Country,
                 City = model.City,
                 Address = model.Address,
-                ProfileImage = uniqueFileName
+                PhoneNumberPublic = model.PhoneNumber,
+                ProfileImage = profileFileName
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -73,20 +96,18 @@ namespace SchoolManagementSystem.Controllers
                 return View(model);
             }
 
-            // Ensure "Principal" role exists
             if (!await _roleManager.RoleExistsAsync("Principal"))
             {
                 await _roleManager.CreateAsync(new IdentityRole("Principal"));
             }
 
-            // Assign role
             await _userManager.AddToRoleAsync(user, "Principal");
-
-            // Auto login after registration
             await _signInManager.SignInAsync(user, isPersistent: false);
 
+            TempData["SuccessMessage"] = "Registration successful!";
             return RedirectToAction("Profile");
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Profile()

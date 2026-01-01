@@ -6,6 +6,8 @@
 <h2>Register</h2>
 
 <form asp-action="Register" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
     <div class="mb-3">
         <label>First Name</label>
         <input asp-for="FirstName" class="form-control" />
@@ -43,8 +45,41 @@
         <input asp-for="ConfirmPassword" type="password" class="form-control" />
     </div>
     <div class="mb-3">
-        <label>Profile Image (from Camera or Upload)</label>
-        <input asp-for="ProfileImageFile" type="file" accept="image/*" capture="user" class="form-control" />
+        <label>Upload Profile Picture (Optional)</label>
+        <input asp-for="ProfileImageFile" type="file" class="form-control" />
     </div>
+
+    <div class="mb-3">
+        <label class="form-label">Capture Photo</label>
+        <video id="video" width="320" height="240" autoplay></video>
+        <button type="button" id="snap" class="btn btn-secondary mt-2">Capture</button>
+        <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+        <input type="hidden" id="ProfileImageBase64" name="ProfileImageBase64" />
+    </div>
+
+
+    @section Scripts {
+        <script>
+            var video = document.getElementById('video');
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            var snap = document.getElementById('snap');
+            var hiddenInput = document.getElementById('ProfileImageBase64');
+
+            // Access webcam
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(err => console.error(err));
+
+            snap.addEventListener('click', function () {
+                context.drawImage(video, 0, 0, 320, 240);
+                hiddenInput.value = canvas.toDataURL('image/png');
+                alert("Photo captured successfully!");
+            });
+        </script>
+    }
+
     <button type="submit" class="btn btn-primary">Register</button>
 </form>

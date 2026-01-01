@@ -5,38 +5,42 @@ namespace SchoolManagementSystem.Models.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required]
-        public string FirstName { get; set; }
+        [Required(ErrorMessage = "First Name is required")]
+        public string FirstName { get; set; } = string.Empty;
 
-        [Required]
-        public string LastName { get; set; }
+        [Required(ErrorMessage = "Last Name is required")]
+        public string LastName { get; set; } = string.Empty;
 
-        [Required]
-        public string Country { get; set; }
+        [Required(ErrorMessage = "Country is required")]
+        public string Country { get; set; } = string.Empty;
 
-        [Required]
-        public string City { get; set; }
+        [Required(ErrorMessage = "City is required")]
+        public string City { get; set; } = string.Empty;
 
-        [Required]
-        public string Address { get; set; }
+        [Required(ErrorMessage = "Address is required")]
+        public string Address { get; set; } = string.Empty;
 
-        [Required]
-        public string PhoneNumber { get; set; }
+        [Required(ErrorMessage = "Phone number is required")]
+        public string PhoneNumber { get; set; } = string.Empty;
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string Email { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Confirm Password is required")]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Passwords do not match.")]
-        public string ConfirmPassword { get; set; }
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; } = string.Empty;
 
-        [Required]
-        public IFormFile ProfileImageFile { get; set; } // For webcam upload
+        // For normal file upload
+        [Required(ErrorMessage = "Profile Image is required")]
+        public IFormFile ProfileImageFile { get; set; } = null!;
+
+        // For live webcam capture (base64 string)
+        public string? ProfileImageBase64 { get; set; }
     }
 }
