@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Models.ViewModels;
 
 namespace SchoolManagementSystem.Controllers
 {
+    //[Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -118,5 +120,196 @@ namespace SchoolManagementSystem.Controllers
 
             return View(user);
         }
+
+
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Profile");
+
+                }
+            }
+
+            ModelState.AddModelError("", "Invalid login attempt.");
+            return View(model);
+        }
+
+        
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                foreach (var err in result.Errors)
+                    ModelState.AddModelError("", err.Description);
+                return View(model);
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
+
+            TempData["SuccessMessage"] = "Password changed successfully!";
+            return RedirectToAction("Profile");
+        }
+
+        [HttpGet]
+        public IActionResult DeleteProfile()
+        {
+            return View();
+        }
+
+        [HttpPost, ActionName("DeleteProfile")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProfileConfirmed()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            await _signInManager.SignOutAsync();
+            var result = await _userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = "Failed to delete your account!";
+                return RedirectToAction("Profile");
+            }
+
+            TempData["SuccessMessage"] = "Your account has been deleted.";
+            return RedirectToAction("Index", "Home");
+        }
+
+        // ================= UPDATE PROFILE =================
+        [HttpGet]
+        public async Task<IActionResult> UpdateProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var model = new UpdateProfileViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Country = user.Country,
+                City = user.City,
+                Address = user.Address,
+                ExistingProfileImage = user.ProfileImage
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            if (!ModelState.IsValid)
+            {
+                model.ExistingProfileImage = user.ProfileImage;
+                return View(model);
+            }
+
+            // ===== UPDATE TEXT DATA (ENCRYPTED SAME AS REGISTER) =====
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.PhoneNumberPublic = model.PhoneNumber;
+            user.Country = model.Country;
+            user.City = model.City;
+            user.Address = model.Address;
+
+            string uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            // ===== IMAGE DECISION LOGIC =====
+            // Priority: Live Capture > Upload > Existing
+
+            // 1️⃣ LIVE CAPTURE (TOP PRIORITY)
+            if (!string.IsNullOrEmpty(model.ProfileImageBase64))
+            {
+                string base64Data = model.ProfileImageBase64.Split(',')[1];
+                byte[] bytes = Convert.FromBase64String(base64Data);
+
+                string newFileName = Guid.NewGuid() + ".png";
+                string filePath = Path.Combine(uploadsFolder, newFileName);
+
+                await System.IO.File.WriteAllBytesAsync(filePath, bytes);
+
+                user.ProfileImage = newFileName;
+            }
+            // 2️⃣ FILE UPLOAD
+            else if (model.ProfileImageFile != null && model.ProfileImageFile.Length > 0)
+            {
+                string newFileName = Guid.NewGuid() + Path.GetExtension(model.ProfileImageFile.FileName);
+                string filePath = Path.Combine(uploadsFolder, newFileName);
+
+                using var fs = new FileStream(filePath, FileMode.Create);
+                await model.ProfileImageFile.CopyToAsync(fs);
+
+                user.ProfileImage = newFileName;
+            }
+            // 3️⃣ ELSE → KEEP OLD IMAGE (DO NOTHING)
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                foreach (var err in result.Errors)
+                    ModelState.AddModelError("", err.Description);
+
+                model.ExistingProfileImage = user.ProfileImage;
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "Profile updated successfully!";
+            return RedirectToAction("Profile");
+        }
+
+
+
+
     }
 }

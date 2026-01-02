@@ -45,7 +45,7 @@ namespace SchoolManagementSystem.Models
     public class ApplicationUser : IdentityUser
     {
         // Store encrypted in DB
-        public string EncryptedFirstName { get; set; } = string.Empty;
+        public string EncryptedFirstName { get; set; } = string.Empty;// Pascal notation
         public string EncryptedLastName { get; set; } = string.Empty;
         public string EncryptedCountry { get; set; } = string.Empty;
         public string EncryptedCity { get; set; } = string.Empty;

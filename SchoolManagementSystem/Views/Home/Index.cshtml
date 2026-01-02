@@ -1,8 +1,152 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- ================= HERO SECTION ================= -->
+<section class="bg-white py-5 border-bottom">
+    <div class="container text-center">
+        <h1 class="display-5 fw-bold text-primary">
+            School Management System
+        </h1>
+        <p class="lead text-muted mt-3">
+            A secure and efficient platform to manage students, teachers,
+            academics, and school operations.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a asp-controller="Account"
+               asp-action="Login"
+               class="btn btn-primary btn-lg">
+                Get Started
+            </a>
+
+            <a asp-controller="Home"
+               asp-action="About"
+               class="btn btn-outline-primary btn-lg">
+                Learn More
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ================= FEATURES SECTION ================= -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">System Features</h2>
+            <p class="text-muted">
+                Designed to simplify school administration
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-people-fill fs-1 text-primary"></i>
+                        <h5 class="mt-3 fw-semibold">Student Management</h5>
+                        <p class="text-muted">
+                            Maintain student records, enrollment details,
+                            and academic information.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-person-badge-fill fs-1 text-primary"></i>
+                        <h5 class="mt-3 fw-semibold">Teacher Management</h5>
+                        <p class="text-muted">
+                            Manage teachers, subjects, schedules,
+                            and professional details.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-shield-lock-fill fs-1 text-primary"></i>
+                        <h5 class="mt-3 fw-semibold">Secure Access</h5>
+                        <p class="text-muted">
+                            Role-based access with secure authentication
+                            and data protection.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= ACHIEVEMENTS SECTION ================= -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Our Achievements</h2>
+            <p class="text-muted">
+                Trusted by schools and educators
+            </p>
+        </div>
+
+        <div class="row text-center g-4">
+            <div class="col-md-3">
+                <h2 class="fw-bold text-primary">5+</h2>
+                <p class="text-muted mb-0">Years of Experience</p>
+            </div>
+            <div class="col-md-3">
+                <h2 class="fw-bold text-primary">20+</h2>
+                <p class="text-muted mb-0">Partner Schools</p>
+            </div>
+            <div class="col-md-3">
+                <h2 class="fw-bold text-primary">5000+</h2>
+                <p class="text-muted mb-0">Registered Students</p>
+            </div>
+            <div class="col-md-3">
+                <h2 class="fw-bold text-primary">300+</h2>
+                <p class="text-muted mb-0">Qualified Teachers</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= ABOUT SCHOOL SECTION ================= -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="fw-bold mb-3">Why Choose Our System?</h2>
+                <p class="text-muted">
+                    Our School Management System is designed to support
+                    academic excellence and efficient administration.
+                    It provides real-time data access, reduces paperwork,
+                    and improves communication between staff and management.
+                </p>
+
+                <ul class="list-unstyled mt-3">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                        Easy to use and user-friendly interface
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                        Secure data storage and privacy
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-primary me-2"></i>
+                        Scalable for small to large schools
+                    </li>
+                </ul>
+            </div>
+
+            @* <div class="col-md-6 text-center">
+                <img src="https://via.placeholder.com/500x300"
+                     class="img-fluid rounded shadow-sm"
+                     alt="School Management">
+            </div> *@
+        </div>
+    </div>
+</section>
