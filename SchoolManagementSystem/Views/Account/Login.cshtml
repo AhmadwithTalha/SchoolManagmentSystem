@@ -1,53 +1,69 @@
-﻿@model SchoolManagementSystem.Models.ViewModels.LoginViewModel
+﻿
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
 
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card shadow-lg border-0" style="max-width: 420px; width: 100%;">
-        <div class="card-header text-center bg-light border-0 py-4">
-            <h3 class="fw-bold text-primary mb-0">Welcome Back</h3>
-            <p class="text-muted mb-0">Please login to your account</p>
-        </div>
+@model SchoolManagementSystem.Models.ViewModels.LoginViewModel
 
-        <div class="card-body p-4">
-            <form asp-action="Login" method="post">
-                <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+<main>
+    <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Email</label>
-                    <input asp-for="Email"
-                           class="form-control form-control-lg"
-                           placeholder="Enter your email" />
-                    <span asp-validation-for="Email" class="text-danger small"></span>
+                    <div class="d-flex justify-content-center py-4">
+                        <a href="/" class="logo d-flex align-items-center w-auto">
+                            <img src="~/assets/img/logo.png" alt="">
+                            <span class="d-none d-lg-block">School Managment System</span>
+                        </a>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+
+                            <form asp-action="Login" method="post" class="row g-3 needs-validation" novalidate>
+                                <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+
+                                <div class="col-12">
+                                    <label for="Email" class="form-label">Email</label>
+                                    <input asp-for="Email" class="form-control" id="Email" placeholder="Enter your email" />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="Password" class="form-label">Password</label>
+                                    <input asp-for="Password" type="password" class="form-control" id="Password" placeholder="Enter your password" />
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                </div>
+
+                                @* <div class="col-12 form-check">
+                                    <input asp-for="RememberMe" class="form-check-input" id="RememberMe" />
+                                    <label class="form-check-label" for="RememberMe">Remember me</label>
+                                </div> *@
+
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                                </div>
+
+                                <div class="col-12 text-center">
+                                    <p class="small mb-0">
+                                        Don't have an account?
+                                        <a asp-controller="Account" asp-action="Register">Create an account</a>
+                                    </p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="credits text-center">
+                        <small>© 2026 School Management System</small>
+                    </div>
+
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Password</label>
-                    <input asp-for="Password"
-                           type="password"
-                           class="form-control form-control-lg"
-                           placeholder="Enter your password" />
-                    <span asp-validation-for="Password" class="text-danger small"></span>
-                </div>
-
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        Login
-                    </button>
-                </div>
-            </form>
-
-            <!-- ================= REGISTER PROMPT ================= -->
-            <div class="text-center mt-4 border-top pt-3">
-                <p class="mb-2 fw-semibold text-muted">Don't have an account?</p>
-                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg">
-                    Create New Account
-                </a>
             </div>
         </div>
+    </section>
+</main>
 
-        <div class="card-footer text-center bg-white border-0 pb-4">
-            <small class="text-muted">
-                © 2026 School Management System
-            </small>
-        </div>
-    </div>
-</div>

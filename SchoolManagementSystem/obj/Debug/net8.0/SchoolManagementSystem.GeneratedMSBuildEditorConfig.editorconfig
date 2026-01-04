@@ -212,68 +212,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxVcGRhdGVQcm9maWxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Home/About.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBYm91dC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Home/Privacy.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Principal/CreateStudent.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJpbmNpcGFsXENyZWF0ZVN0dWRlbnQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Principal/CreateTeacher.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJpbmNpcGFsXENyZWF0ZVRlYWNoZXIuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Principal/Dashboard.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJpbmNpcGFsXERhc2hib2FyZC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Principal/Profile.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJpbmNpcGFsXFByb2ZpbGUuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Principal/UsersList.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJpbmNpcGFsXFVzZXJzTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Shared/_LoginPartial.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Mb2dpblBhcnRpYWwuY3NodG1s
+[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Shared/_AuthLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BdXRoTGF5b3V0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Shared/_ValidationScriptsPartial.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Shared/_Navbar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9OYXZiYXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Shared/_ViewImports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WaWV3SW1wb3J0cy5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Student/Dashboard.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxEYXNoYm9hcmQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Student/Profile.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxQcm9maWxlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Teacher/Dashboard.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVhY2hlclxEYXNoYm9hcmQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Teacher/Profile.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVhY2hlclxQcm9maWxlLmNzaHRtbA==
+[C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/Shared/_Sidebar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9TaWRlYmFyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Ahmad Talha/source/repos/SchoolManagementSystem/SchoolManagementSystem/Views/_ViewImports.cshtml]

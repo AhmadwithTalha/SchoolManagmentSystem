@@ -1,105 +1,140 @@
-﻿@model SchoolManagementSystem.Models.ViewModels.RegisterViewModel
+﻿
+@model SchoolManagementSystem.Models.ViewModels.PrincipleRegisterViewModel
+
 @{
     ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
 }
 
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card shadow-lg border-0" style="max-width: 720px; width: 100%;">
-        <div class="card-header text-center bg-light border-0 py-4">
-            <h3 class="fw-bold text-primary mb-0">Create Account</h3>
-            <p class="text-muted mb-0">Register to access the system</p>
-        </div>
+<main>
+    <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8 d-flex flex-column align-items-center justify-content-center">
 
-        <div class="card-body p-4">
-            <form asp-action="Register" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="All" class="text-danger small mb-3"></div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">First Name</label>
-                        <input asp-for="FirstName" class="form-control form-control-lg" />
+                    <!-- Logo -->
+                    <div class="d-flex justify-content-center py-4">
+                        <a asp-controller="Home" asp-action="Index" class="logo d-flex align-items-center w-auto">
+                            <img src="~/assets/img/logo.png" alt="">
+                            <span class="d-none d-lg-block">SchoolMS</span>
+                        </a>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Last Name</label>
-                        <input asp-for="LastName" class="form-control form-control-lg" />
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Country</label>
-                        <input asp-for="Country" class="form-control form-control-lg" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">City</label>
-                        <input asp-for="City" class="form-control form-control-lg" />
-                    </div>
-                </div>
+                    <!-- Card -->
+                    <div class="card mb-3">
+                        <div class="card-body">
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Address</label>
-                    <input asp-for="Address" class="form-control form-control-lg" />
-                </div>
+                            <div class="pt-4 pb-2">
+                                <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
+                                <p class="text-center small">Enter your personal details</p>
+                            </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Phone Number</label>
-                    <input asp-for="PhoneNumber" class="form-control form-control-lg" />
-                </div>
+                            <form asp-action="Register" method="post" enctype="multipart/form-data"
+                                  class="row g-3 needs-validation">
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Email</label>
-                    <input asp-for="Email" class="form-control form-control-lg" />
-                </div>
+                                <div asp-validation-summary="All" class="text-danger small"></div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Password</label>
-                        <input asp-for="Password" type="password" class="form-control form-control-lg" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-semibold">Confirm Password</label>
-                        <input asp-for="ConfirmPassword" type="password" class="form-control form-control-lg" />
-                    </div>
-                </div>
+                                <!-- First & Last Name -->
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name</label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Upload Profile Picture (Optional)</label>
-                    <input asp-for="ProfileImageFile" type="file" class="form-control form-control-lg" />
-                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name</label>
+                                    <input asp-for="LastName" class="form-control" />
+                                </div>
 
-                <!-- Camera Capture Section -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Capture Photo</label>
-                    <div class="border rounded p-3 bg-light text-center">
-                        <video id="video" class="rounded mb-2" width="320" height="240" autoplay></video>
-                        <div>
-                            <button type="button" id="snap" class="btn btn-outline-primary btn-sm">
-                                Capture Photo
-                            </button>
+                                <!-- Country & City -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Country</label>
+                                    <input asp-for="Country" class="form-control" />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">City</label>
+                                    <input asp-for="City" class="form-control" />
+                                </div>
+
+                                <!-- Address -->
+                                <div class="col-12">
+                                    <label class="form-label">Address</label>
+                                    <input asp-for="Address" class="form-control" />
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="col-12">
+                                    <label class="form-label">Phone Number</label>
+                                    <input asp-for="PhoneNumber" class="form-control" />
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-12">
+                                    <label class="form-label">Email</label>
+                                    <input asp-for="Email" class="form-control" />
+                                </div>
+
+                                <!-- Password -->
+                                <div class="col-md-6">
+                                    <label class="form-label">Password</label>
+                                    <input asp-for="Password" type="password" class="form-control" />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Confirm Password</label>
+                                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                                </div>
+
+                                <!-- Upload Image -->
+                                <div class="col-12">
+                                    <label class="form-label">Upload Profile Picture (Optional)</label>
+                                    <input asp-for="ProfileImageFile" type="file" class="form-control" />
+                                </div>
+
+                                <!-- Camera Capture -->
+                                <div class="col-12">
+                                    <label class="form-label">Capture Photo</label>
+                                    <div class="border rounded p-3 text-center bg-light">
+                                        <video id="video" class="rounded mb-2" width="320" height="240" autoplay></video>
+                                        <div>
+                                            <button type="button" id="snap" class="btn btn-outline-primary btn-sm">
+                                                Capture Photo
+                                            </button>
+                                        </div>
+                                        <canvas id="canvas" width="320" height="240" class="d-none"></canvas>
+                                        <input type="hidden" id="ProfileImageBase64" name="ProfileImageBase64" />
+                                    </div>
+                                </div>
+
+                                <!-- Submit -->
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100" type="submit">
+                                        Create Account
+                                    </button>
+                                </div>
+
+                                <!-- Login Link -->
+                                <div class="col-12 text-center">
+                                    <p class="small mb-0">
+                                        Already have an account?
+                                        <a asp-controller="Account" asp-action="Login">Log in</a>
+                                    </p>
+                                </div>
+
+                            </form>
+
                         </div>
-                        <canvas id="canvas" width="320" height="240" class="d-none"></canvas>
-                        <input type="hidden" id="ProfileImageBase64" name="ProfileImageBase64" />
                     </div>
-                </div>
 
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        Register
-                    </button>
-                </div>
-            </form>
-        </div>
+                    <div class="credits text-center">
+                        © 2026 School Management System
+                    </div>
 
-        <div class="card-footer text-center bg-white border-0 pb-4">
-            <small class="text-muted">
-                Already have an account?
-                <a asp-controller="Account" asp-action="Login" class="text-primary fw-semibold">
-                    Login
-                </a>
-            </small>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    </section>
+</main>
 
 @section Scripts {
     <script>

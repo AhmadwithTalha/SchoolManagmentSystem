@@ -6,7 +6,9 @@ using SchoolManagementSystem.Models.ViewModels;
 
 namespace SchoolManagementSystem.Controllers
 {
-    //[Authorize]
+   
+
+
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -34,7 +36,7 @@ namespace SchoolManagementSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(PrincipleRegisterViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -107,7 +109,8 @@ namespace SchoolManagementSystem.Controllers
             await _signInManager.SignInAsync(user, isPersistent: false);
 
             TempData["SuccessMessage"] = "Registration successful!";
-            return RedirectToAction("Profile");
+            return RedirectToAction("Login", "Account");
+
         }
 
 
@@ -141,8 +144,7 @@ namespace SchoolManagementSystem.Controllers
                 var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Profile");
-
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
@@ -150,20 +152,28 @@ namespace SchoolManagementSystem.Controllers
             return View(model);
         }
 
-        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+
+            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
+
+            return RedirectToAction("Login", "Account");
         }
 
 
+        [Authorize]
         [HttpGet]
         public IActionResult ChangePassword()
         {
             return View();
         }
-
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
@@ -188,13 +198,13 @@ namespace SchoolManagementSystem.Controllers
             TempData["SuccessMessage"] = "Password changed successfully!";
             return RedirectToAction("Profile");
         }
-
+        
         [HttpGet]
         public IActionResult DeleteProfile()
         {
             return View();
         }
-
+        
         [HttpPost, ActionName("DeleteProfile")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProfileConfirmed()
@@ -217,6 +227,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         // ================= UPDATE PROFILE =================
+        
         [HttpGet]
         public async Task<IActionResult> UpdateProfile()
         {
@@ -224,7 +235,7 @@ namespace SchoolManagementSystem.Controllers
             if (user == null)
                 return RedirectToAction("Login");
 
-            var model = new UpdateProfileViewModel
+            var model = new PrincipleUpdateProfileViewModel
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -238,10 +249,10 @@ namespace SchoolManagementSystem.Controllers
 
             return View(model);
         }
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateProfile(UpdateProfileViewModel model)
+        public async Task<IActionResult> UpdateProfile(PrincipleUpdateProfileViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
