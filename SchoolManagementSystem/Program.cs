@@ -11,15 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Add Identity
-
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-//    .AddEntityFrameworkStores<ApplicationDbContext>()
-//    .AddDefaultTokenProviders();
-
-// Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -41,6 +33,11 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    await DbInitializer.SeedRolesAsync(scope.ServiceProvider);
 }
 
 app.UseStaticFiles();

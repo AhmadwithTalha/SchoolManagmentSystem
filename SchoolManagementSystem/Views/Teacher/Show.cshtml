@@ -1,0 +1,52 @@
+﻿@model IEnumerable<SchoolManagementSystem.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Teacher List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Teacher Management</h2>
+
+<div class="mb-3">
+    <a class="btn btn-primary" asp-action="TeacherRegister">Create Teacher</a>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Profile</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Country</th>
+            <th>City</th>
+            <th>Address</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var teacher in Model)
+        {
+            <tr>
+                <td>
+                    <img src="~/images/@teacher.ProfileImage" width="50" height="50" class="rounded-circle" />
+                </td>
+                <td>@teacher.FirstName @teacher.LastName</td>
+                <td>@teacher.Email</td>
+                <td>@teacher.PhoneNumberPublic</td>
+                <td>@teacher.Country</td>
+                <td>@teacher.City</td>
+                <td>@teacher.Address</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@teacher.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@teacher.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Are you sure to delete this teacher?');">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

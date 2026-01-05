@@ -9,7 +9,6 @@ namespace SchoolManagementSystem.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        public DbSet<Teacher> Teachers { get; set; }
 
     }
 }

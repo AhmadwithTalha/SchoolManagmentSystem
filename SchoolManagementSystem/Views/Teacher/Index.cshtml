@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Teacher Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Teacher Management</h3>
+
+        <a asp-controller="Teacher"
+           asp-action="TeacherRegister"
+           class="btn btn-primary">
+            + Create Teacher
+        </a>
+    </div>
+
+    <!-- Placeholder / Empty State -->
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <h5 class="text-muted">No teachers displayed yet</h5>
+            <p class="text-muted small">
+                Teachers list will appear here.
+            </p>
+        </div>
+    </div>
+
+</div>

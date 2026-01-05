@@ -1,9 +1,13 @@
 
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SchoolManagementSystem.Models;
 
 namespace SchoolManagementSystem.Controllers
 {
+    //[Authorize(Roles = "Principal")]
     public class HomeController : Controller
     {
         public IActionResult Index()
@@ -16,6 +20,7 @@ namespace SchoolManagementSystem.Controllers
             return View();
         }
 
+       
         public IActionResult About()
         {
             return View();

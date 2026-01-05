@@ -1,0 +1,176 @@
+﻿@* @model SchoolManagementSystem.Models.ViewModels.TeacherUpdateViewModel
+
+@* @{
+    ViewData["Title"] = "Edit Teacher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Teacher</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label class="form-label">First Name</label>
+        <input asp-for="FirstName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Last Name</label>
+        <input asp-for="LastName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Phone Number</label>
+        <input asp-for="PhoneNumberPublic" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Country</label>
+        <input asp-for="Country" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">City</label>
+        <input asp-for="City" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Address</label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Upload Profile Image (Optional)</label>
+        <input asp-for="ProfileImageFile" type="file" class="form-control" />
+        @if (!string.IsNullOrEmpty(Model.ExistingProfileImage))
+        {
+            <img src="~/images/@Model.ExistingProfileImage" width="80" class="mt-2 rounded-circle" />
+        }
+    </div>
+
+    <div class="mb-3">
+        <button class="btn btn-primary" type="submit">Update Teacher</button>
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</form> *@ 
+
+@* @model SchoolManagementSystem.Models.PrincipleUpdateProfileViewModel *@
+
+@model SchoolManagementSystem.Models.TeacherUpdateViewModel
+
+@{
+    ViewData["Title"] = "Edit Teacher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">Update Profile</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="card shadow-sm border-0 p-4" style="max-width:600px;">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <!-- Email (read-only) -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Email</label>
+                <input asp-for="Email" class="form-control" readonly />
+            </div>
+
+            <!-- Other personal fields -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">First Name</label>
+                <input asp-for="FirstName" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Last Name</label>
+                <input asp-for="LastName" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Phone Number</label>
+                <input asp-for="PhoneNumber" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Country</label>
+                <input asp-for="Country" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">City</label>
+                <input asp-for="City" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Address</label>
+                <input asp-for="Address" class="form-control" />
+            </div>
+
+            <!-- Profile image section -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Profile Image (Upload or Capture)</label>
+
+                <!-- File upload -->
+                <input asp-for="ProfileImageFile" type="file" class="form-control mb-2" />
+
+                <!-- Live capture -->
+                <video id="video" width="320" height="240" autoplay class="mb-2"></video>
+                <button type="button" id="snap" class="btn btn-secondary btn-sm mb-2">Capture Photo</button>
+                <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                <input type="hidden" asp-for="ProfileImageBase64" />
+
+                <!-- Existing image preview -->
+                @if (!string.IsNullOrEmpty(Model.ExistingProfileImage))
+                {
+                    <div class="mt-2">
+                        <strong>Current Image:</strong><br />
+                        @* <img src="~/images/@Model.ExistingProfileImage" style="max-width:150px; border-radius:5px;" /> *@
+                        <img src="~/images/@Model.ExistingProfileImage?v=@DateTime.Now.Ticks"
+                             style="max-width:150px; border-radius:5px;" />
+
+                    </div>
+                }
+            </div>
+
+            <!-- Hidden field to keep old image if no new image is uploaded/captured -->
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-grid mt-3">
+                <button type="submit" class="btn btn-primary btn-lg">Update Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Video capture
+        var video = document.getElementById('video');
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var snap = document.getElementById('snap');
+        var hiddenInput = document.querySelector('input[name="ProfileImageBase64"]');
+
+        // Access webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => console.error(err));
+
+        // Capture photo
+        snap.addEventListener('click', function () {
+            context.drawImage(video, 0, 0, 320, 240);
+            hiddenInput.value = canvas.toDataURL('image/png');
+            alert("Photo captured successfully!");
+        });
+    </script>
+}
+

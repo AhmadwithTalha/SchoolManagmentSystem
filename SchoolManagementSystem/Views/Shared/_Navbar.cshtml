@@ -31,29 +31,33 @@
                                     <i class="bi bi-person me-2"></i>ViewPofile
                                 </a>
                             </li>
-                            <li>
-                                <a class="dropdown-item"
-                                   asp-controller="Account"
-                                   asp-action="UpdateProfile">
-                                    <i class="bi bi-person me-2"></i>Update Profile
-                                </a>
-                            </li>
+                            @if (User.IsInRole("Principal"))
+                            {
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="Account"
+                                       asp-action="UpdateProfile">
+                                        <i class="bi bi-person me-2"></i>Update Profile
+                                    </a>
+                                </li>
 
-                            <li>
-                                <a class="dropdown-item"
-                                   asp-controller="Account"
-                                   asp-action="ChangePassword">
-                                    <i class="bi bi-key me-2"></i>Change Password
-                                </a>
-                            </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="Account"
+                                       asp-action="ChangePassword">
+                                        <i class="bi bi-key me-2"></i>Change Password
+                                    </a>
+                                </li>
 
-                            <li>
-                                <a class="dropdown-item text-danger"
-                                   asp-controller="Account"
-                                   asp-action="DeleteProfile">
-                                    <i class="bi bi-trash me-2"></i>Delete Profile
-                                </a>
-                            </li>
+                                <li>
+                                    <a class="dropdown-item text-danger"
+                                       asp-controller="Account"
+                                       asp-action="DeleteProfile">
+                                        <i class="bi bi-trash me-2"></i>Delete Profile
+                                    </a>
+                                </li>
+                            }
+
 
                             <li><hr class="dropdown-divider" /></li>
 

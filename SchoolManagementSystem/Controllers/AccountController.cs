@@ -6,9 +6,7 @@ using SchoolManagementSystem.Models.ViewModels;
 
 namespace SchoolManagementSystem.Controllers
 {
-   
-
-
+  
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -17,7 +15,7 @@ namespace SchoolManagementSystem.Controllers
         private readonly IWebHostEnvironment _environment;
 
         public AccountController(
-            UserManager<ApplicationUser> userManager,
+            UserManager<ApplicationUser> userManager,  
             RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,
             IWebHostEnvironment environment)
