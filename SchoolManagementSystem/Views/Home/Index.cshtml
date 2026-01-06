@@ -53,4 +53,15 @@
     </div>
 
 </div> *@
-<p>that is common page for all user</p>
+@{
+    ViewData["Title"] = "Home";
+}
+
+@if (User.IsInRole("Teacher"))
+{
+    <div class="container mt-4">
+        <h4 class="text-muted">
+            Welcome! You can view your profile from the menu.
+        </h4>
+    </div>
+}

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
 
@@ -42,7 +41,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAuthentication(); // Identity
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.Use(async (context, next) =>

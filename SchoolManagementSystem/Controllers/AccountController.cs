@@ -122,13 +122,21 @@ namespace SchoolManagementSystem.Controllers
             return View(user);
         }
 
-
-
         [HttpGet]
         public IActionResult Login()
         {
+            // If already logged in, DO NOT show login page
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Principal"))
+                    return RedirectToAction("Dashboard", "Home");
+
+                return RedirectToAction("Index", "Home");
+            }
+
             return View();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)

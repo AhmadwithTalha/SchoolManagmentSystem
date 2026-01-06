@@ -1,1 +1,69 @@
-﻿
+﻿@* @{
+    ViewData["Title"] = "Principal Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="fw-bold text-primary">
+        Welcome, this is Principal Dashboard
+    </h2>
+</div> *@
+@model SchoolManagementSystem.Models.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Principal Dashboard";
+}
+
+<div class="container-fluid mt-4">
+
+    <h2 class="fw-bold text-primary mb-4">
+        Principal Dashboard
+    </h2>
+
+    <div class="row g-4">
+
+        <!-- Total Users -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill fs-1 text-primary"></i>
+                    <h5 class="mt-2">Total Users</h5>
+                    <h3 class="fw-bold">@Model.TotalUsers</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Principals -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-badge fs-1 text-success"></i>
+                    <h5 class="mt-2">Principals</h5>
+                    <h3 class="fw-bold">@Model.TotalPrincipals</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teachers -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="bi bi-mortarboard fs-1 text-warning"></i>
+                    <h5 class="mt-2">Teachers</h5>
+                    <h3 class="fw-bold">@Model.TotalTeachers</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students (Future) -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <i class="bi bi-journal-bookmark fs-1 text-info"></i>
+                    <h5 class="mt-2">Students</h5>
+                    <h3 class="fw-bold">@Model.TotalStudents</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
