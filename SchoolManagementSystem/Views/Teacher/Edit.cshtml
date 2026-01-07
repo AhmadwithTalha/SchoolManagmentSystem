@@ -1,63 +1,4 @@
-﻿@* @model SchoolManagementSystem.Models.ViewModels.TeacherUpdateViewModel
-
-@* @{
-    ViewData["Title"] = "Edit Teacher";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-<h2>Edit Teacher</h2>
-
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <input type="hidden" asp-for="Id" />
-
-    <div asp-validation-summary="All" class="text-danger"></div>
-
-    <div class="mb-3">
-        <label class="form-label">First Name</label>
-        <input asp-for="FirstName" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Last Name</label>
-        <input asp-for="LastName" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Phone Number</label>
-        <input asp-for="PhoneNumberPublic" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Country</label>
-        <input asp-for="Country" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">City</label>
-        <input asp-for="City" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Address</label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Upload Profile Image (Optional)</label>
-        <input asp-for="ProfileImageFile" type="file" class="form-control" />
-        @if (!string.IsNullOrEmpty(Model.ExistingProfileImage))
-        {
-            <img src="~/images/@Model.ExistingProfileImage" width="80" class="mt-2 rounded-circle" />
-        }
-    </div>
-
-    <div class="mb-3">
-        <button class="btn btn-primary" type="submit">Update Teacher</button>
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-    </div>
-</form> *@ 
-
-@* @model SchoolManagementSystem.Models.PrincipleUpdateProfileViewModel *@
+﻿
 
 @model SchoolManagementSystem.Models.TeacherUpdateViewModel
 
@@ -102,13 +43,24 @@
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">Country</label>
-                <input asp-for="CountryId" class="form-control" />
+                <select asp-for="CountryId"
+                        asp-items="Model.Countries"
+                        class="form-control"
+                        id="CountryId">
+                    <option value="">-- Select Country --</option>
+                </select>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">City</label>
-                <input asp-for="CityId" class="form-control" />
+                <select asp-for="CityId"
+                        asp-items="Model.Cities"
+                        class="form-control"
+                        id="CityId">
+                    <option value="">-- Select City --</option>
+                </select>
             </div>
+
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">Address</label>
@@ -174,3 +126,21 @@
     </script>
 }
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+    $('#CountryId').change(function () {
+        var countryId = $(this).val();
+        $('#CityId').empty().append('<option value="">-- Select City --</option>');
+
+        if (countryId) {
+            $.getJSON('/Account/GetCitiesByCountry', { countryId: countryId }, function (data) {
+                $.each(data, function (i, city) {
+                    $('#CityId').append(
+                        $('<option>').val(city.id).text(city.name)
+                    );
+                });
+            });
+        }
+    });
+</script>

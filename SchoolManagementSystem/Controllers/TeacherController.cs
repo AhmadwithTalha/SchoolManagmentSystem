@@ -1,48 +1,94 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Models.ViewModels;
 namespace SchoolManagementSystem.Controllers;
+
 [Authorize(Roles = "Principal")]
 public class TeacherController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IWebHostEnvironment _environment;
+    private readonly ApplicationDbContext _context;
+
 
     public TeacherController(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        ApplicationDbContext context)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _environment = environment;
+        _context = context;
     }
 
     // ===================== CREATE TEACHER =====================
     [Authorize(Roles = "Principal")]
     public IActionResult TeacherRegister()
     {
-        return View();
+        var model = new TeacherRegisterViewModel
+        {
+            Countries = _context.Countries
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                }).ToList(),
 
+            Cities = new List<SelectListItem>() // empty initially
+        };
+
+        return View(model);
     }
     [Authorize(Roles = "Principal")]
+
     public async Task<IActionResult> Index()
     {
-        var teachers = await _userManager.GetUsersInRoleAsync("Teacher");
+        
+        var teachers = await _context.Users
+       .Include(u => u.Country)
+       .Include(u => u.City)
+       .Where(u => !u.IsDeleted)
+       .Where(u => _context.UserRoles
+           .Any(ur => ur.UserId == u.Id &&
+                      _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Teacher")))
+       .ToListAsync();
+
         return View("Show", teachers);
     }
-
 
     [Authorize(Roles = "Principal")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> TeacherRegister(TeacherRegisterViewModel model)
     {
+        
         if (!ModelState.IsValid)
+        {
+            model.Countries = _context.Countries
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                }).ToList();
+
+            model.Cities = _context.Cities
+                .Where(c => c.CountryId == model.CountryId)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                }).ToList();
+
             return View(model);
+        }
 
         string uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
         if (!Directory.Exists(uploadsFolder))
@@ -99,7 +145,7 @@ public class TeacherController : Controller
 
         await _userManager.AddToRoleAsync(user, "Teacher");
 
-        TempData["SuccessMessage"] = "Teacher created successfully!";
+        //TempData["SuccessMessage"] = "Teacher created successfully!";
         return RedirectToAction("Index", "Teacher");
     }
 
@@ -112,7 +158,8 @@ public class TeacherController : Controller
             return NotFound();
 
         var teacher = await _userManager.FindByIdAsync(id);
-        if (teacher == null) return NotFound();
+        if (teacher == null)
+            return NotFound();
 
         var model = new TeacherUpdateViewModel
         {
@@ -124,10 +171,39 @@ public class TeacherController : Controller
             CountryId = teacher.CountryId,
             CityId = teacher.CityId,
             Address = teacher.Address,
-            ExistingProfileImage = teacher.ProfileImage
+            ExistingProfileImage = teacher.ProfileImage,
+
+            // ✅ Load dropdowns
+            Countries = await _context.Countries
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                }).ToListAsync(),
+
+            Cities = await _context.Cities
+                .Where(c => c.CountryId == teacher.CountryId)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                }).ToListAsync()
         };
 
         return View(model);
+    }
+    //Delete
+    [HttpPost]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var teacher = await _context.Users.FindAsync(id);
+        if (teacher == null) return NotFound();
+
+        teacher.IsDeleted = true;   // soft delete
+        _context.Update(teacher);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Index");
     }
 
 
@@ -137,7 +213,24 @@ public class TeacherController : Controller
     public async Task<IActionResult> Edit(TeacherUpdateViewModel model)
     {
         if (!ModelState.IsValid)
+        {
+            model.Countries = await _context.Countries
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                }).ToListAsync();
+
+            model.Cities = await _context.Cities
+                .Where(c => c.CountryId == model.CountryId)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                }).ToListAsync();
+
             return View(model);
+        }
 
         var teacher = await _userManager.FindByIdAsync(model.Id);
         if (teacher == null) return NotFound();
@@ -174,11 +267,9 @@ public class TeacherController : Controller
 
         await _userManager.UpdateAsync(teacher);
 
-        TempData["SuccessMessage"] = "Teacher updated successfully!";
        
         var teachers = await _userManager.GetUsersInRoleAsync("Teacher");
-        return View("Show", teachers);
-    
-}
+        return RedirectToAction(nameof(Index));
+    }
 
 }

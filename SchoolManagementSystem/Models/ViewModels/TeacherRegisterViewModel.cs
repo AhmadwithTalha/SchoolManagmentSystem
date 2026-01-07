@@ -43,8 +43,8 @@ namespace SchoolManagementSystem.Models.ViewModels
         // For live webcam capture (base64 string)
         public string? ProfileImageBase64 { get; set; }
 
+        public List<SelectListItem> Countries { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> Cities { get; set; } = new List<SelectListItem>();
 
-        public List<SelectListItem> Countries { get; set; }
-        public List<SelectListItem> Cities { get; set; }
     }
 }

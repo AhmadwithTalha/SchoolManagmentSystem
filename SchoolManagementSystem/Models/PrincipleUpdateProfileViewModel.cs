@@ -18,8 +18,8 @@ namespace SchoolManagementSystem.Models
         public List<SelectListItem> Countries { get; set; }
         [ValidateNever]
         public List<SelectListItem> Cities { get; set; }
-        public IFormFile ProfileImageFile { get; set; } // optional
-        public string ProfileImageBase64 { get; set; }  // optional
-        public string ExistingProfileImage { get; set; } // optional, just display
+        public IFormFile ProfileImageFile { get; set; } 
+        public string ProfileImageBase64 { get; set; }  
+        public string ExistingProfileImage { get; set; } 
     }
 }

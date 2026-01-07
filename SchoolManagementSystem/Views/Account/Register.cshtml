@@ -45,18 +45,7 @@
                                     <input asp-for="LastName" class="form-control" />
                                 </div>
 
-                                @* <!-- Country & City -->
-                                <div class="col-md-6">
-                                    <label class="form-label">Country</label>
-                                    <input asp-for="CountryId" class="form-control" />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">City</label>
-                                    <input asp-for="CityId" class="form-control" />
-                                </div> *@
-
-
+                           
                                 <div class="col-md-6">
                                     <label class="form-label">Country</label>
                                     <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="CountryId">

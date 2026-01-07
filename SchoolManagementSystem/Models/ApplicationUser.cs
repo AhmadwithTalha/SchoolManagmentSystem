@@ -44,10 +44,7 @@ namespace SchoolManagementSystem.Models
             get => EncryptedCountryId;
             set => EncryptedCountryId = value;
         }
-        //{
-        //    get => EncryptionHelper.Decrypt(EncryptedCountry);
-        //    set => EncryptedCountry = EncryptionHelper.Encrypt(value);
-        //}
+       
 
         [NotMapped]
         public int CityId
@@ -55,10 +52,7 @@ namespace SchoolManagementSystem.Models
             get => EncryptedCityId;
             set => EncryptedCityId = value;
         }
-        //{
-        //    get => EncryptionHelper.Decrypt(EncryptedCity);
-        //    set => EncryptedCity = EncryptionHelper.Encrypt(value);
-        //}
+      
 
         [NotMapped]
         public string Address

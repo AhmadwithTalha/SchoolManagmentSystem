@@ -32,13 +32,6 @@ namespace SchoolManagementSystem.Controllers
             _context = context;
         }
 
-
-
-        //[HttpGet]
-        //public IActionResult Register()
-        //{
-        //    return View();
-        //}
         [HttpGet]
         public IActionResult Register()
         {
@@ -118,7 +111,6 @@ namespace SchoolManagementSystem.Controllers
 
 
 
-
             // Save base64 image if present (live webcam)
             if (!string.IsNullOrEmpty(model.ProfileImageBase64))
             {
@@ -168,16 +160,6 @@ namespace SchoolManagementSystem.Controllers
 
         }
 
-
-        //[HttpGet]
-        //public async Task<IActionResult> Profile()
-        //{
-        //    var user = await _userManager.GetUserAsync(User);
-        //    if (user == null)
-        //        return RedirectToAction("Register");
-
-        //    return View(user);
-        //}
         [HttpGet]
         public async Task<IActionResult> Profile()
         {

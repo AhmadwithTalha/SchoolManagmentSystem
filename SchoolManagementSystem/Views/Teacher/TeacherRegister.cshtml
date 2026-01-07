@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
 }
 
+
 <main>
     <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
         <div class="container">
@@ -13,7 +14,7 @@
 
                     <!-- Logo -->
                     <div class="d-flex justify-content-center py-4">
-                        <a asp-controller="Teacher" asp-action="TeacherRegister" class="logo d-flex align-items-center w-auto">
+                        <a asp-controller="Home" asp-action="Index" class="logo d-flex align-items-center w-auto">
                             <img src="~/assets/img/logo.png" alt="">
                             <span class="d-none d-lg-block">SchoolMS</span>
                         </a>
@@ -30,10 +31,6 @@
 
                             <form asp-action="TeacherRegister" method="post" enctype="multipart/form-data"
                                   class="row g-3 needs-validation">
-                            @* <form asp-controller="Teacher"
-                                  asp-action="TeacherRegister"
-                                  method="post"
-                                  enctype="multipart/form-data"> *@
 
                                 <div asp-validation-summary="All" class="text-danger small"></div>
 
@@ -48,15 +45,19 @@
                                     <input asp-for="LastName" class="form-control" />
                                 </div>
 
-                                <!-- Country & City -->
+                           
                                 <div class="col-md-6">
                                     <label class="form-label">Country</label>
-                                    <input asp-for="CountryId" class="form-control" />
+                                    <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="CountryId">
+                                        <option value="">-- Select Country --</option>
+                                    </select>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">City</label>
-                                    <input asp-for="CityId" class="form-control" />
+                                    <select asp-for="CityId" asp-items="Model.Cities" class="form-control" id="CityId">
+                                        <option value="">-- Select City --</option>
+                                    </select>
                                 </div>
 
                                 <!-- Address -->
@@ -158,3 +159,29 @@
         });
     </script>
 }
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#CountryId').change(function() {
+            var countryId = $(this).val();
+            $('#CityId').empty().append('<option value="">-- Select City --</option>');
+
+            if (countryId) {
+                $.getJSON('/Account/GetCitiesByCountry', { countryId: countryId }, function(data) {
+                    $.each(data, function(index, city) {
+                        $('#CityId').append('<option value="' + city.id + '">' + city.name + '</option>');
+                    });
+                });
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+

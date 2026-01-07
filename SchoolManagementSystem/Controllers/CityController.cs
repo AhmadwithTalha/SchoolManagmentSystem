@@ -15,7 +15,7 @@ public class CityController : Controller
         _context = context;
     }
 
-    // ================= INDEX =================
+    // INDEX
     public async Task<IActionResult> Index()
     {
         var cities = await _context.Cities
@@ -25,7 +25,7 @@ public class CityController : Controller
         return View(cities);
     }
 
-    // ================= CREATE =================
+    //  CREATE
     public IActionResult Create()
     {
         ViewBag.Countries = new SelectList(_context.Countries, "Id", "Name");
