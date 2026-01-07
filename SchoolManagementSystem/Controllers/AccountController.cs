@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Models.ViewModels;
 
 namespace SchoolManagementSystem.Controllers
 {
+
   
     public class AccountController : Controller
     {
@@ -13,23 +17,49 @@ namespace SchoolManagementSystem.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IWebHostEnvironment _environment;
-
+        private readonly ApplicationDbContext _context;
         public AccountController(
             UserManager<ApplicationUser> userManager,  
             RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,
-            IWebHostEnvironment environment)
+            IWebHostEnvironment environment,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _environment = environment;
+            _context = context;
         }
 
+
+
+        //[HttpGet]
+        //public IActionResult Register()
+        //{
+        //    return View();
+        //}
         [HttpGet]
         public IActionResult Register()
         {
-            return View();
+            var model = new PrincipleRegisterViewModel
+            {
+                Countries = _context.Countries
+                                   .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                                   .ToList(),
+                Cities = new List<SelectListItem>() // empty initially
+            };
+            return View(model);
+        }
+
+        [HttpGet]
+        public JsonResult GetCitiesByCountry(int countryId)
+        {
+            var cities = _context.Cities
+                                 .Where(c => c.CountryId == countryId)
+                                 .Select(c => new { c.Id, c.Name })
+                                 .ToList();
+            return Json(cities);
         }
 
         [HttpPost]
@@ -62,6 +92,33 @@ namespace SchoolManagementSystem.Controllers
                 return View(model);
             }
 
+            if (!ModelState.IsValid)
+            {
+                // Repopulate countries and cities
+                model.Countries = _context.Countries
+                                          .Select(c => new SelectListItem
+                                          {
+                                              Value = c.Id.ToString(),
+                                              Text = c.Name
+                                          }).ToList();
+
+                model.Cities = model.CountryId != 0
+                    ? _context.Cities
+                              .Where(c => c.CountryId == model.CountryId)
+                              .Select(c => new SelectListItem
+                              {
+                                  Value = c.Id.ToString(),
+                                  Text = c.Name
+                              }).ToList()
+                    : new List<SelectListItem>();
+
+                return View(model);
+            }
+
+
+
+
+
             // Save base64 image if present (live webcam)
             if (!string.IsNullOrEmpty(model.ProfileImageBase64))
             {
@@ -82,8 +139,8 @@ namespace SchoolManagementSystem.Controllers
                 PhoneNumber = model.PhoneNumber,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                Country = model.Country,
-                City = model.City,
+                CountryId = model.CountryId,
+                CityId = model.CityId,
                 Address = model.Address,
                 PhoneNumberPublic = model.PhoneNumber,
                 ProfileImage = profileFileName
@@ -112,10 +169,25 @@ namespace SchoolManagementSystem.Controllers
         }
 
 
+        //[HttpGet]
+        //public async Task<IActionResult> Profile()
+        //{
+        //    var user = await _userManager.GetUserAsync(User);
+        //    if (user == null)
+        //        return RedirectToAction("Register");
+
+        //    return View(user);
+        //}
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var userId = _userManager.GetUserId(User);
+
+            var user = await _context.Users
+                .Include(u => u.Country)
+                .Include(u => u.City)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
             if (user == null)
                 return RedirectToAction("Register");
 
@@ -247,10 +319,25 @@ namespace SchoolManagementSystem.Controllers
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Country = user.Country,
-                City = user.City,
+                CountryId = user.CountryId,
+                CityId = user.CityId,
                 Address = user.Address,
-                ExistingProfileImage = user.ProfileImage
+                ExistingProfileImage = user.ProfileImage,
+
+                Countries = await _context.Countries
+            .Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToListAsync(),
+
+                Cities = await _context.Cities
+            .Where(c => c.CountryId == user.CountryId)
+            .Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToListAsync()
             };
 
             return View(model);
@@ -266,6 +353,20 @@ namespace SchoolManagementSystem.Controllers
 
             if (!ModelState.IsValid)
             {
+                model.Countries = await _context.Countries
+            .Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToListAsync();
+
+                model.Cities = await _context.Cities
+                    .Where(c => c.CountryId == model.CountryId)
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = c.Name
+                    }).ToListAsync();
                 model.ExistingProfileImage = user.ProfileImage;
                 return View(model);
             }
@@ -274,8 +375,8 @@ namespace SchoolManagementSystem.Controllers
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.PhoneNumberPublic = model.PhoneNumber;
-            user.Country = model.Country;
-            user.City = model.City;
+            user.CountryId = (int)model.CountryId;
+            user.CityId = model.CityId;
             user.Address = model.Address;
 
             string uploadsFolder = Path.Combine(_environment.WebRootPath, "images");

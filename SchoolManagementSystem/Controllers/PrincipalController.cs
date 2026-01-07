@@ -22,8 +22,8 @@ namespace SchoolManagementSystem.Controllers
 
             user!.FirstName = EncryptionHelper.Decrypt(user.FirstName!);
             user.LastName = EncryptionHelper.Decrypt(user.LastName!);
-            user.Country = EncryptionHelper.Decrypt(user.Country!);
-            user.City = EncryptionHelper.Decrypt(user.City!);
+            user.CountryId = (user.CountryId!);
+            user.CityId = (user.CityId!);
             user.Address = EncryptionHelper.Decrypt(user.Address!);
             user.PhoneNumber = EncryptionHelper.Decrypt(user.PhoneNumber!);
 

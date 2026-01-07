@@ -78,8 +78,8 @@ public class TeacherController : Controller
             PhoneNumberPublic = model.PhoneNumber,
             FirstName = model.FirstName,
             LastName = model.LastName,
-            Country = model.Country,
-            City = model.City,
+            CountryId = model.CountryId,
+            CityId = model.CityId,
             Address = model.Address,
             ProfileImage = profileFileName
         };
@@ -121,8 +121,8 @@ public class TeacherController : Controller
             LastName = teacher.LastName,
             Email = teacher.Email,
             PhoneNumber = teacher.PhoneNumberPublic,
-            Country = teacher.Country,
-            City = teacher.City,
+            CountryId = teacher.CountryId,
+            CityId = teacher.CityId,
             Address = teacher.Address,
             ExistingProfileImage = teacher.ProfileImage
         };
@@ -146,8 +146,8 @@ public class TeacherController : Controller
         teacher.FirstName = model.FirstName;
         teacher.LastName = model.LastName;
         teacher.PhoneNumberPublic = model.PhoneNumber;
-        teacher.Country = model.Country;
-        teacher.City = model.City;
+        teacher.CountryId = model.CountryId;
+        teacher.CityId= model.CityId;
         teacher.Address = model.Address;
 
         string uploadsFolder = Path.Combine(_environment.WebRootPath, "images");

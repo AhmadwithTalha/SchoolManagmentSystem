@@ -45,15 +45,30 @@
                                     <input asp-for="LastName" class="form-control" />
                                 </div>
 
-                                <!-- Country & City -->
+                                @* <!-- Country & City -->
                                 <div class="col-md-6">
                                     <label class="form-label">Country</label>
-                                    <input asp-for="Country" class="form-control" />
+                                    <input asp-for="CountryId" class="form-control" />
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">City</label>
-                                    <input asp-for="City" class="form-control" />
+                                    <input asp-for="CityId" class="form-control" />
+                                </div> *@
+
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Country</label>
+                                    <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="CountryId">
+                                        <option value="">-- Select Country --</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">City</label>
+                                    <select asp-for="CityId" asp-items="Model.Cities" class="form-control" id="CityId">
+                                        <option value="">-- Select City --</option>
+                                    </select>
                                 </div>
 
                                 <!-- Address -->
@@ -155,3 +170,20 @@
         });
     </script>
 }
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#CountryId').change(function() {
+            var countryId = $(this).val();
+            $('#CityId').empty().append('<option value="">-- Select City --</option>');
+
+            if (countryId) {
+                $.getJSON('/Account/GetCitiesByCountry', { countryId: countryId }, function(data) {
+                    $.each(data, function(index, city) {
+                        $('#CityId').append('<option value="' + city.id + '">' + city.name + '</option>');
+                    });
+                });
+            }
+        });
+    });
+</script>

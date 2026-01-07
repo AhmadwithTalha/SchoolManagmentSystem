@@ -38,7 +38,7 @@
                                     <span class="text-muted">@Model.PhoneNumber</span>
                                 </p>
 
-                                <p class="mb-2">
+                                @* <p class="mb-2">
                                     <strong>Country:</strong>
                                     <span class="text-muted">@Model.Country</span>
                                 </p>
@@ -46,7 +46,9 @@
                                 <p class="mb-2">
                                     <strong>City:</strong>
                                     <span class="text-muted">@Model.City</span>
-                                </p>
+                                </p> *@
+                    <p><strong>Country:</strong> @Model.Country?.Name</p>
+                    <p><strong>City:</strong> @Model.City?.Name</p>
 
                                 <p class="mb-0">
                                     <strong>Address:</strong>

@@ -178,13 +178,11 @@ namespace SchoolManagementSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EncryptedCity")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("EncryptedCityId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("EncryptedCountry")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("EncryptedCountryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("EncryptedFirstName")
                         .IsRequired()
@@ -240,6 +238,10 @@ namespace SchoolManagementSystem.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EncryptedCityId");
+
+                    b.HasIndex("EncryptedCountryId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -251,7 +253,7 @@ namespace SchoolManagementSystem.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("SchoolManagementSystem.Models.Teacher", b =>
+            modelBuilder.Entity("SchoolManagementSystem.Models.City", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -259,33 +261,35 @@ namespace SchoolManagementSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CountryId");
 
-                    b.ToTable("Teachers");
+                    b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("SchoolManagementSystem.Models.Country", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -339,15 +343,39 @@ namespace SchoolManagementSystem.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SchoolManagementSystem.Models.Teacher", b =>
+            modelBuilder.Entity("SchoolManagementSystem.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("SchoolManagementSystem.Models.ApplicationUser", "User")
+                    b.HasOne("SchoolManagementSystem.Models.City", "City")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("EncryptedCityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.HasOne("SchoolManagementSystem.Models.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("EncryptedCountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("SchoolManagementSystem.Models.City", b =>
+                {
+                    b.HasOne("SchoolManagementSystem.Models.Country", "Country")
+                        .WithMany("Cities")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("SchoolManagementSystem.Models.Country", b =>
+                {
+                    b.Navigation("Cities");
                 });
 #pragma warning restore 612, 618
         }

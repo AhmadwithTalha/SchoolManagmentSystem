@@ -1,0 +1,56 @@
+﻿
+@model IEnumerable<SchoolManagementSystem.Models.City>
+
+@{
+    ViewData["Title"] = "City Management";
+}
+
+<div class="container mt-4">
+
+  
+    <h2>Cities</h2>
+
+    <a asp-action="Create" class="btn btn-primary mb-3">Add City</a>
+
+    <!-- City Table -->
+    <table id="cityTable" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>City Name</th>
+                <th>Country Name</th>
+                <th style="width:200px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var city in Model)
+            {
+                <tr>
+                    <td>@city.Name</td>
+                    <td>@city.Country.Name</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@city.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@city.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#cityTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "lengthChange": true,
+                "columnDefs": [
+                    { "orderable": false, "targets": 2 } // Actions column
+                ]
+            });
+        });
+    </script>
+}

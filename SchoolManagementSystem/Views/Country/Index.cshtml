@@ -1,0 +1,41 @@
+﻿
+<h2 class="fw-bold text-primary">Countries</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Add Country</a>
+
+<table id="countryTable" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th style="width:200px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var country in Model)
+        {
+            <tr>
+                <td>@country.Name</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@country.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@country.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#countryTable').DataTable({
+                "paging": true,           // Enable pagination
+                "searching": true,        // Enable search box
+                "ordering": true,         // Enable column sorting
+                "info": true,             // Show "Showing x of y entries"
+                "lengthChange": true,     // Allow changing number of rows per page
+                "columnDefs": [
+                    { "orderable": false, "targets": 1 } // Actions column should not be sortable
+                ]
+            });
+        });
+    </script>
+}

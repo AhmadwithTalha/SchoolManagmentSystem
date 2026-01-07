@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManagementSystem.Models.ViewModels
 {
@@ -11,10 +12,10 @@ namespace SchoolManagementSystem.Models.ViewModels
         public string LastName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Country is required")]
-        public string Country { get; set; } = string.Empty;
+        public int CountryId { get; set; }
 
         [Required(ErrorMessage = "City is required")]
-        public string City { get; set; } = string.Empty;
+        public int CityId { get; set; }
 
         [Required(ErrorMessage = "Address is required")]
         public string Address { get; set; } = string.Empty;
@@ -41,5 +42,9 @@ namespace SchoolManagementSystem.Models.ViewModels
 
         // For live webcam capture (base64 string)
         public string? ProfileImageBase64 { get; set; }
+
+
+        public List<SelectListItem> Countries { get; set; }
+        public List<SelectListItem> Cities { get; set; }
     }
 }

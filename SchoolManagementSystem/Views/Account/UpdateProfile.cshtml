@@ -1,7 +1,7 @@
 ﻿@model SchoolManagementSystem.Models.PrincipleUpdateProfileViewModel
 
 @{
-    ViewData["Title"] = "Update Profile";
+    ViewData["Title"] = Model.Id != null ? "Update Profile" : "Update Profile";
 }
 
 <div class="container mt-4">
@@ -15,7 +15,7 @@
     <div class="card shadow-sm border-0 p-4" style="max-width:600px;">
         <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="All" class="text-danger mb-3"></div>
-
+            <input type="hidden" asp-for="Id" />
             <!-- Email (read-only) -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Email</label>
@@ -40,13 +40,24 @@
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">Country</label>
-                <input asp-for="Country" class="form-control" />
+                <select asp-for="CountryId"
+                        asp-items="Model.Countries"
+                        class="form-select">
+                    <option value="">-- Select Country --</option>
+                </select>
+                <span asp-validation-for="CountryId" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">City</label>
-                <input asp-for="City" class="form-control" />
+                <select asp-for="CityId"
+                        asp-items="Model.Cities"
+                        class="form-select">
+                    <option value="">-- Select City --</option>
+                </select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
             </div>
+
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">Address</label>
@@ -111,3 +122,20 @@
         });
     </script>
 }
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#CountryId').change(function() {
+            var countryId = $(this).val();
+            $('#CityId').empty().append('<option value="">-- Select City --</option>');
+
+            if (countryId) {
+                $.getJSON('/Account/GetCitiesByCountry', { countryId: countryId }, function(data) {
+                    $.each(data, function(index, city) {
+                        $('#CityId').append('<option value="' + city.id + '">' + city.name + '</option>');
+                    });
+                });
+            }
+        });
+    });
+</script>

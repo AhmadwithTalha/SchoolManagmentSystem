@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Views\NewFolder1\" />
     <Folder Include="wwwroot\uploads\Students\" />
     <Folder Include="wwwroot\uploads\Teachers\" />
     <Folder Include="wwwroot\uploads\Principals\" />

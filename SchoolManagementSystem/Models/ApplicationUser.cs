@@ -10,12 +10,19 @@ namespace SchoolManagementSystem.Models
         // Store encrypted in DB
         public string EncryptedFirstName { get; set; } = string.Empty;// Pascal notation
         public string EncryptedLastName { get; set; } = string.Empty;
-        public string EncryptedCountry { get; set; } = string.Empty;
-        public string EncryptedCity { get; set; } = string.Empty;
+        [ForeignKey("Country")]
+        public int EncryptedCountryId { get; set; }
+        [ForeignKey("City")]
+        public int EncryptedCityId { get; set; } 
         public string EncryptedAddress { get; set; } = string.Empty;
         public string EncryptedPhoneNumber { get; set; } = string.Empty;
         public string ProfileImage { get; set; } = string.Empty;
         public bool IsDeleted { get; set; } = false;
+
+
+        public Country Country { get; set; }
+        public City City { get; set; }
+
         // Not mapped properties for use in views
         [NotMapped]
         public string FirstName
@@ -32,18 +39,26 @@ namespace SchoolManagementSystem.Models
         }
 
         [NotMapped]
-        public string Country
+        public int CountryId
         {
-            get => EncryptionHelper.Decrypt(EncryptedCountry);
-            set => EncryptedCountry = EncryptionHelper.Encrypt(value);
+            get => EncryptedCountryId;
+            set => EncryptedCountryId = value;
         }
+        //{
+        //    get => EncryptionHelper.Decrypt(EncryptedCountry);
+        //    set => EncryptedCountry = EncryptionHelper.Encrypt(value);
+        //}
 
         [NotMapped]
-        public string City
+        public int CityId
         {
-            get => EncryptionHelper.Decrypt(EncryptedCity);
-            set => EncryptedCity = EncryptionHelper.Encrypt(value);
+            get => EncryptedCityId;
+            set => EncryptedCityId = value;
         }
+        //{
+        //    get => EncryptionHelper.Decrypt(EncryptedCity);
+        //    set => EncryptedCity = EncryptionHelper.Encrypt(value);
+        //}
 
         [NotMapped]
         public string Address
