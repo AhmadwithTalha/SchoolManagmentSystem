@@ -287,3 +287,10 @@ C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\
 C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\obj\Debug\net8.0\SchoolManagementSystem.pdb
 C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\obj\Debug\net8.0\SchoolManagementSystem.genruntimeconfig.cache
 C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\obj\Debug\net8.0\ref\SchoolManagementSystem.dll
+C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\bin\Debug\net8.0\iTextSharp.LGPLv2.Core.dll
+C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\bin\Debug\net8.0\SkiaSharp.dll
+C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\bin\Debug\net8.0\runtimes\osx\native\libSkiaSharp.dylib
+C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\bin\Debug\net8.0\runtimes\win-arm64\native\libSkiaSharp.dll
+C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\bin\Debug\net8.0\runtimes\win-x64\native\libSkiaSharp.dll
+C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\bin\Debug\net8.0\runtimes\win-x86\native\libSkiaSharp.dll

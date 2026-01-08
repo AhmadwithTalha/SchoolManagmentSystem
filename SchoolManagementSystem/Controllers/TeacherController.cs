@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Models.ViewModels;
+using SchoolManagementSystem.Services;
 namespace SchoolManagementSystem.Controllers;
 
 [Authorize(Roles = "Principal")]
@@ -15,18 +16,23 @@ public class TeacherController : Controller
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IWebHostEnvironment _environment;
     private readonly ApplicationDbContext _context;
+    private readonly TeacherPdfService _teacherPdfService;
 
 
     public TeacherController(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
         IWebHostEnvironment environment,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        TeacherPdfService teacherPdfService
+        
+        )
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _environment = environment;
         _context = context;
+        _teacherPdfService = teacherPdfService;
     }
 
     // ===================== CREATE TEACHER =====================
@@ -271,5 +277,22 @@ public class TeacherController : Controller
         var teachers = await _userManager.GetUsersInRoleAsync("Teacher");
         return RedirectToAction(nameof(Index));
     }
+
+    public async Task<IActionResult> ExportPdf()
+    {
+        var teachers = await _context.Users
+            .Include(u => u.Country)
+            .Include(u => u.City)
+            .Where(u => !u.IsDeleted)
+            .Where(u => _context.UserRoles
+                .Any(ur => ur.UserId == u.Id &&
+                           _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Teacher")))
+            .ToListAsync();
+
+        var pdfBytes = _teacherPdfService.GenerateTeacherPdf(teachers);
+
+        return File(pdfBytes, "application/pdf", "Teachers_Report.pdf");
+    }
+
 
 }

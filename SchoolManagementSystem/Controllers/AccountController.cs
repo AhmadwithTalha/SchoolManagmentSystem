@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Models.ViewModels;
+using SchoolManagementSystem.Services;
 
 namespace SchoolManagementSystem.Controllers
 {
@@ -18,18 +19,25 @@ namespace SchoolManagementSystem.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IWebHostEnvironment _environment;
         private readonly ApplicationDbContext _context;
+        private readonly PrinciplePdfService _principlePdfService;
+
         public AccountController(
             UserManager<ApplicationUser> userManager,  
             RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,
             IWebHostEnvironment environment,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            PrinciplePdfService principlePdfService
+            )
+
+
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _environment = environment;
             _context = context;
+            _principlePdfService = principlePdfService;
         }
 
         [HttpGet]
@@ -408,6 +416,21 @@ namespace SchoolManagementSystem.Controllers
             return RedirectToAction("Profile");
         }
 
+        //public async Task<IActionResult> ExportPdf()
+        //{
+        //    var principals = await _context.Users
+        //        .Include(u => u.Country)
+        //        .Include(u => u.City)
+        //        .Where(u => !u.IsDeleted) // Only active
+        //        .Where(u => _context.UserRoles
+        //            .Any(ur => ur.UserId == u.Id &&
+        //                       _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Principle")))
+        //        .ToListAsync();
+
+        //    var pdfBytes = _principlePdfService.GeneratePrinciplePdf(principals);
+
+        //    return File(pdfBytes, "application/pdf", "Principals_Report.pdf");
+        //}
 
 
 

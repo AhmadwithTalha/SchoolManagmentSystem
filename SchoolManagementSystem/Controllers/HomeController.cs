@@ -1,11 +1,13 @@
 
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Models.ViewModels;
+using SchoolManagementSystem.Services;
+using SkiaSharp;
 
 
 namespace SchoolManagementSystem.Controllers
@@ -15,12 +17,22 @@ namespace SchoolManagementSystem.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-
+        private readonly PrinciplePdfService _principlePdfService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(UserManager<ApplicationUser> userManager)
+        public HomeController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            PrinciplePdfService principlePdfService,
+            RoleManager<IdentityRole> roleManager
+        )
         {
-            _userManager = userManager;
+            _context = context;                 
+            _userManager = userManager;              
+            _principlePdfService = principlePdfService; 
+            _roleManager = roleManager;               
         }
 
         public IActionResult Index()
@@ -51,6 +63,23 @@ namespace SchoolManagementSystem.Controllers
 
             return View(model);
         }
+        [Authorize(Roles = "Principal")]
+        public async Task<IActionResult> ExportPdf()
+        {
+            var principals = await _context.Users
+                .Include(u => u.Country)
+                .Include(u => u.City)
+                .Where(u => !u.IsDeleted)
+                .Where(u => _context.UserRoles
+                    .Any(ur => ur.UserId == u.Id &&
+                               _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Principal")))
+                .ToListAsync();
+
+            var pdfBytes = _principlePdfService.GeneratePrinciplePdf(principals);
+
+            return File(pdfBytes, "application/pdf", "Principals_Report.pdf");
+        }
+
 
     }
 }

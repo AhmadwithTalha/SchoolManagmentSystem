@@ -4,15 +4,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
+using SchoolManagementSystem.Services;
 
 [Authorize(Roles = "Principal")]
 public class CityController : Controller
 {
     private readonly ApplicationDbContext _context;
-
-    public CityController(ApplicationDbContext context)
+    private readonly CityPdfService _cityPdfService;
+    public CityController(ApplicationDbContext context,  CityPdfService cityPdfService)
     {
         _context = context;
+        _cityPdfService = cityPdfService;
     }
 
     // INDEX
@@ -103,4 +105,20 @@ public class CityController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    public async Task<IActionResult> ExportPdf()
+    {
+        var cities = await _context.Cities
+            .Include(c => c.Country)
+            .ToListAsync();
+
+        var pdfBytes = _cityPdfService.GenerateCityPdf(cities);
+
+        return File(
+            pdfBytes,
+            "application/pdf",
+            "Cities_Report.pdf"
+        );
+    }
+
 }

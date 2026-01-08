@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
+using SchoolManagementSystem.Services;
 
 namespace SchoolManagementSystem.Controllers
 {
@@ -10,10 +11,12 @@ namespace SchoolManagementSystem.Controllers
     public class CountryController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly CountryPdfService _pdfService;
 
-        public CountryController(ApplicationDbContext context)
+        public CountryController(ApplicationDbContext context, CountryPdfService pdfService)
         {
             _context = context;
+            _pdfService = pdfService;
         }
 
         // GET: Country
@@ -89,5 +92,20 @@ namespace SchoolManagementSystem.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+
+        public async Task<IActionResult> ExportPdf()
+        {
+            var countries = await _context.Countries.ToListAsync();
+
+            var pdfBytes = _pdfService.GenerateCountryPdf(countries);
+
+            return File(
+                pdfBytes,
+                "application/pdf",
+                "Countries_Report.pdf"
+            );
+        }
+
     }
 }

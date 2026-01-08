@@ -8,6 +8,7 @@ using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Models.ViewModels;
+using SchoolManagementSystem.Services;
 
 namespace SchoolManagementSystem.Controllers
 {
@@ -18,16 +19,20 @@ namespace SchoolManagementSystem.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly StudentPdfService _studentPdfService;
 
         public StudentController(UserManager<ApplicationUser> userManager,
                                  RoleManager<IdentityRole> roleManager,
                                  ApplicationDbContext context,
-                                 IWebHostEnvironment environment)
+                                 IWebHostEnvironment environment,
+                                 StudentPdfService studentPdfService
+           )
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
             _environment = environment;
+            _studentPdfService = studentPdfService;
         }
 
         public async Task<IActionResult> Index()
@@ -131,7 +136,7 @@ namespace SchoolManagementSystem.Controllers
                 var student = new ApplicationUser
                 {
                     Id = Guid.NewGuid().ToString(),
-                    UserName = model.Email,
+                    UserName = EncryptionHelper.Encrypt(model.Email),
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     FirstName = model.FirstName,
@@ -213,5 +218,23 @@ namespace SchoolManagementSystem.Controllers
                                  .ToList();
             return Json(cities);
         }
+
+
+        public async Task<IActionResult> ExportPdf()
+        {
+            var students = await _context.Users
+                .Include(u => u.Country)
+                .Include(u => u.City)
+                .Where(u => !u.IsDeleted) // only non-deleted
+                .Where(u => _context.UserRoles
+                    .Any(ur => ur.UserId == u.Id &&
+                               _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Student")))
+                .ToListAsync();
+
+            var pdfBytes = _studentPdfService.GenerateStudentPdf(students);
+
+            return File(pdfBytes, "application/pdf", "Students_Report.pdf");
+        }
+
     }
 }
