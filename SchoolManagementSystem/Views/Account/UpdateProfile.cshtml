@@ -1,141 +1,164 @@
 ﻿@model SchoolManagementSystem.Models.PrincipleUpdateProfileViewModel
 
+
+
 @{
-    ViewData["Title"] = Model.Id != null ? "Update Profile" : "Update Profile";
+    ViewData["Title"] = "Update Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4 text-primary">Update Profile</h2>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-12 col-md-10">
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-    }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                @* <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div> *@
+            }
 
-    <div class="card shadow-sm border-0 p-4" style="max-width:600px;">
-        <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="All" class="text-danger mb-3"></div>
-            <input type="hidden" asp-for="Id" />
-            <!-- Email (read-only) -->
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Email</label>
-                <input asp-for="Email" class="form-control" readonly />
-            </div>
+            <div class="card shadow-sm">
+                <div class="card-body">
 
-            <!-- Other personal fields -->
-            <div class="mb-3">
-                <label class="form-label fw-semibold">First Name</label>
-                <input asp-for="FirstName" class="form-control" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Last Name</label>
-                <input asp-for="LastName" class="form-control" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Phone Number</label>
-                <input asp-for="PhoneNumber" class="form-control" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Country</label>
-                <select asp-for="CountryId"
-                        asp-items="Model.Countries"
-                        class="form-select">
-                    <option value="">-- Select Country --</option>
-                </select>
-                <span asp-validation-for="CountryId" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">City</label>
-                <select asp-for="CityId"
-                        asp-items="Model.Cities"
-                        class="form-select">
-                    <option value="">-- Select City --</option>
-                </select>
-                <span asp-validation-for="CityId" class="text-danger"></span>
-            </div>
-
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Address</label>
-                <input asp-for="Address" class="form-control" />
-            </div>
-
-            <!-- Profile image section -->
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Profile Image (Upload or Capture)</label>
-
-                <!-- File upload -->
-                <input asp-for="ProfileImageFile" type="file" class="form-control mb-2" />
-
-                <!-- Live capture -->
-                <video id="video" width="320" height="240" autoplay class="mb-2"></video>
-                <button type="button" id="snap" class="btn btn-secondary btn-sm mb-2">Capture Photo</button>
-                <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-                <input type="hidden" asp-for="ProfileImageBase64" />
-
-                <!-- Existing image preview -->
-                @if (!string.IsNullOrEmpty(Model.ExistingProfileImage))
-                {
-                    <div class="mt-2">
-                        <strong>Current Image:</strong><br />
-                        @* <img src="~/images/@Model.ExistingProfileImage" style="max-width:150px; border-radius:5px;" /> *@
-                        <img src="~/images/@Model.ExistingProfileImage?v=@DateTime.Now.Ticks"
-                             style="max-width:150px; border-radius:5px;" />
-
+                    <div class="mb-4 text-center">
+                        <h4 class="fw-bold">Update Profile</h4>
                     </div>
-                }
+
+                    <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data" class="row g-3">
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="All" class="text-danger small"></div>
+
+                       
+
+                        <!-- Name -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">First Name</label>
+                            <input asp-for="FirstName" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Last Name</label>
+                            <input asp-for="LastName" class="form-control" />
+                        </div>
+                        <!-- Country / City -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Country</label>
+                            <select asp-for="CountryId"
+                                    asp-items="Model.Countries"
+                                    class="form-select"
+                                    id="CountryId">
+                                <option value="">-- Select Country --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">City</label>
+                            <select asp-for="CityId"
+                                    asp-items="Model.Cities"
+                                    class="form-select"
+                                    id="CityId">
+                                <option value="">-- Select City --</option>
+                            </select>
+                        </div>
+                        <!-- Phone -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Phone Number</label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                        </div>
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input asp-for="Email" class="form-control" readonly />
+                        </div>
+
+                        <!-- Address -->
+                        <div class="col-12">
+                            <label class="form-label">Address</label>
+                            <input asp-for="Address" class="form-control" />
+                        </div>
+
+                      
+
+                        <!-- Profile Image -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Profile Image</label>
+
+                            <input asp-for="ProfileImageFile" type="file" class="form-control mb-2" />
+
+                            <div class="border rounded p-3 bg-light text-center">
+                                <video id="video" width="320" height="240" autoplay class="rounded mb-2"></video>
+                                <br />
+                                <button type="button" id="snap" class="btn btn-outline-primary btn-sm">
+                                    Capture Photo
+                                </button>
+
+                                <canvas id="canvas" width="320" height="240" class="d-none"></canvas>
+                                <input type="hidden" asp-for="ProfileImageBase64" />
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.ExistingProfileImage))
+                            {
+                                <div class="mt-2">
+                                    <strong>Current Image:</strong><br />
+                                    <img src="~/images/@Model.ExistingProfileImage?v=@DateTime.Now.Ticks"
+                                         style="max-width:150px; border-radius:5px;" />
+                                </div>
+                            }
+                       
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="col-12 text-end mt-3">
+                            <button type="submit" class="btn btn-primary px-4">
+                                Update Profile
+                            </button>
+
+                            <a asp-action="Index" class="btn btn-secondary ms-2">
+                                Back
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
             </div>
 
-            <!-- Hidden field to keep old image if no new image is uploaded/captured -->
-            <input type="hidden" asp-for="ExistingProfileImage" />
-
-            <div class="d-grid mt-3">
-                <button type="submit" class="btn btn-primary btn-lg">Update Profile</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        // Video capture
-        var video = document.getElementById('video');
-        var canvas = document.getElementById('canvas');
-        var context = canvas.getContext('2d');
-        var snap = document.getElementById('snap');
-        var hiddenInput = document.querySelector('input[name="ProfileImageBase64"]');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const snap = document.getElementById('snap');
+        const hiddenInput = document.querySelector('input[name="ProfileImageBase64"]');
 
-        // Access webcam
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => { video.srcObject = stream; })
-            .catch(err => console.error(err));
+            .then(stream => video.srcObject = stream);
 
-        // Capture photo
         snap.addEventListener('click', function () {
             context.drawImage(video, 0, 0, 320, 240);
             hiddenInput.value = canvas.toDataURL('image/png');
             alert("Photo captured successfully!");
         });
-    </script>
-}
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#CountryId').change(function() {
+
+        $('#CountryId').change(function () {
             var countryId = $(this).val();
             $('#CityId').empty().append('<option value="">-- Select City --</option>');
 
             if (countryId) {
-                $.getJSON('/Account/GetCitiesByCountry', { countryId: countryId }, function(data) {
-                    $.each(data, function(index, city) {
-                        $('#CityId').append('<option value="' + city.id + '">' + city.name + '</option>');
+                $.getJSON('/Account/GetCitiesByCountry', { countryId }, function (data) {
+                    $.each(data, function (i, city) {
+                        $('#CityId').append(`<option value="${city.id}">${city.name}</option>`);
                     });
                 });
             }
         });
-    });
-</script>
+    </script>
+}
+

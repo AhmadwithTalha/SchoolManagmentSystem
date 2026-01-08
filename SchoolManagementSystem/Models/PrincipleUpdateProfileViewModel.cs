@@ -19,7 +19,7 @@ namespace SchoolManagementSystem.Models
         [ValidateNever]
         public List<SelectListItem> Cities { get; set; }
         public IFormFile ProfileImageFile { get; set; } 
-        public string ProfileImageBase64 { get; set; }  
-        public string ExistingProfileImage { get; set; } 
+        public string? ProfileImageBase64 { get; set; }  
+        public string? ExistingProfileImage { get; set; } 
     }
 }

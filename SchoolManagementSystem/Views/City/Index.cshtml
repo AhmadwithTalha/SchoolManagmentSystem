@@ -7,11 +7,24 @@
 
 <div class="container mt-4">
 
-  
-    <h2>Cities</h2>
 
-    <a asp-action="Create" class="btn btn-primary mb-3">Add City</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-primary mb-0">Cities</h3>
 
+        <div class="d-flex gap-2">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Add City
+            </a>
+
+            <a asp-action="ExportPdf" class="btn btn-danger">
+                <i class="bi bi-file-earmark-pdf-fill"></i> Export PDF
+            </a>
+
+            <a asp-action="ExportExcel" class="btn btn-success">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export Excel
+            </a>
+        </div>
+    </div>
     <!-- City Table -->
     <table id="cityTable" class="table table-bordered table-striped">
         <thead>
@@ -28,8 +41,8 @@
                     <td>@city.Name</td>
                     <td>@city.Country.Name</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@city.Id" class="btn btn-sm btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@city.Id" class="btn btn-sm btn-danger">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@city.Id" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                        <a asp-action="Delete" asp-route-id="@city.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
                     </td>
                 </tr>
             }

@@ -32,19 +32,21 @@ namespace SchoolManagementSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Get all users in Student role
-            var students = await _userManager.GetUsersInRoleAsync("Student");
 
-            // Optionally include Country/City for display
-            var studentList = await _context.Users
-                                            .Include(u => u.Country)
-                                            .Include(u => u.City)
-                                            .Where(u => !u.IsDeleted)
-                                            //.Where(u => students.Select(s => s.Id).Contains(u.Id))
-                                            .ToListAsync();
+            var student = await _context.Users
+           .Include(u => u.Country)
+           .Include(u => u.City)
+           .Where(u => !u.IsDeleted)
+           .Where(u => _context.UserRoles
+               .Any(ur => ur.UserId == u.Id &&
+                          _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Student")))
+           .ToListAsync();
 
-            return View(studentList);
+            return View(student);
         }
+
+
+
 
         // ✅ GET Create/Edit
         [HttpGet]

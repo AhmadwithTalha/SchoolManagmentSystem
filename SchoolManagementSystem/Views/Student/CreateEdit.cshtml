@@ -1,10 +1,11 @@
-﻿@model SchoolManagementSystem.Models.ViewModels.StudentViewModel
+﻿@* @model SchoolManagementSystem.Models.ViewModels.StudentViewModel
 
 @{
     ViewData["Title"] = Model.Id == null ? "Add Student" : "Edit Student";
 }
 
 <h2 class="text-primary mb-4">@ViewData["Title"]</h2>
+
 
 <form asp-action="CreateEdit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
@@ -102,4 +103,4 @@
             alert("Photo captured successfully!");
         });
     </script>
-}
+} *@
