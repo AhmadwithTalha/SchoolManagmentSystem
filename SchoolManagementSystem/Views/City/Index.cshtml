@@ -23,6 +23,13 @@
             <a asp-action="ExportExcel" class="btn btn-success">
                 <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export Excel
             </a>
+
+            <form asp-action="ImportExcel" enctype="multipart/form-data" method="post">
+                <input type="file" name="excelFile" accept=".xlsx" required />
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-upload"></i> Import Excel
+                </button>
+            </form>
         </div>
     </div>
     <!-- City Table -->
@@ -50,7 +57,15 @@
     </table>
 
 </div>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@Html.Raw(TempData["Success"])</div>
+}
 
+@if (TempData["Errors"] != null)
+{
+    <div class="alert alert-danger">@Html.Raw(TempData["Errors"])</div>
+}
 @section Scripts {
     <script>
         $(document).ready(function () {

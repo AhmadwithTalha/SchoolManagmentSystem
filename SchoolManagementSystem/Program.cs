@@ -3,9 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Services;
+using OfficeOpenXml;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+//ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 // Add DB Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -34,6 +37,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 })
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
+
 var app = builder.Build();
 // Configure middleware
 if (!app.Environment.IsDevelopment())

@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Models;
 using SchoolManagementSystem.Models.ViewModels;
 using SchoolManagementSystem.Services;
+using System.Drawing;
 namespace SchoolManagementSystem.Controllers;
 
 [Authorize(Roles = "Principal")]
@@ -294,5 +297,89 @@ public class TeacherController : Controller
         return File(pdfBytes, "application/pdf", "Teachers_Report.pdf");
     }
 
+    public IActionResult ExportExcel()
+    {
+        // 1️⃣ Get all students
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+        var students = _context.Users
+                               .Where(u => u.IsDeleted == false && _context.UserRoles
+                               .Any(r => r.UserId == u.Id && r.RoleId == _context.Roles
+                               .FirstOrDefault(role => role.Name == "Teacher").Id))
+                               .Include(u => u.City)
+                               .Include(u => u.Country)
+                               .ToList();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
+        // 2️⃣ Create Excel package
+        using var package = new ExcelPackage();
+        var worksheet = package.Workbook.Worksheets.Add("Teachers");
+
+        // 3️⃣ Title row
+        worksheet.Cells["A1:I1"].Merge = true;
+        worksheet.Cells["A1"].Value = "Teachers Reports";
+        worksheet.Cells["A1"].Style.Font.Size = 16;
+        worksheet.Cells["A1"].Style.Font.Bold = true;
+        worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+        worksheet.Cells["A1"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells["A1"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+        // 4️⃣ Column headers
+        worksheet.Cells["A3"].Value = "Sr No";
+        worksheet.Cells["B3"].Value = "First Name";
+        worksheet.Cells["C3"].Value = "Last Name";
+        worksheet.Cells["D3"].Value = "Email";
+        worksheet.Cells["E3"].Value = "Phone Number";
+        worksheet.Cells["F3"].Value = "City";
+        worksheet.Cells["G3"].Value = "Country";
+        worksheet.Cells["H3"].Value = "Address";
+        worksheet.Cells["I3"].Value = "Profile Picture";
+
+        worksheet.Cells["A3:I3"].Style.Font.Bold = true;
+        worksheet.Cells["A3:I3"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells["A3:I3"].Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
+        worksheet.Cells["A3:I3"].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+
+        // 5️⃣ Fill data
+        int row = 4;
+        int sr = 1;
+        string wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
+        foreach (var student in students)
+        {
+            worksheet.Cells[row, 1].Value = sr++;
+            worksheet.Cells[row, 2].Value = student.FirstName; // decrypted
+            worksheet.Cells[row, 3].Value = student.LastName;
+            worksheet.Cells[row, 4].Value = student.Email;
+            worksheet.Cells[row, 5].Value = student.PhoneNumberPublic;
+            worksheet.Cells[row, 6].Value = student.City?.Name;
+            worksheet.Cells[row, 7].Value = student.Country?.Name;
+            worksheet.Cells[row, 8].Value = student.Address;
+
+            // Profile Image
+            if (!string.IsNullOrEmpty(student.ProfileImage))
+            {
+                string imagePath = Path.Combine(wwwrootPath, "images", student.ProfileImage);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    Image img = Image.FromFile(imagePath); // load image
+                    var picture = worksheet.Drawings.AddPicture($"img{row}", img);
+                    picture.SetPosition(row - 1, 5, 8, 5); // rowIndex-1, offset, colIndex=I(9)
+                    picture.SetSize(50, 50); // Resize to fit
+                    worksheet.Row(row).Height = 40; // Increase row height
+                }
+            }
+
+            worksheet.Cells[row, 1, row, 8].Style.Border.BorderAround(ExcelBorderStyle.Thin);
+            row++;
+        }
+
+        // 6️⃣ Auto-fit columns (except image)
+        worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+        // 7️⃣ Return file
+        var excelBytes = package.GetAsByteArray();
+        return File(excelBytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "Teachers_Report.xlsx");
+    }
 }
