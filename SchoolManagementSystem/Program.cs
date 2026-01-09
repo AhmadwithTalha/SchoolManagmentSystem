@@ -16,7 +16,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 builder.Services.AddRazorPages();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+});
+
 builder.Services.AddScoped<CountryPdfService>();
 builder.Services.AddScoped<CityPdfService>();
 builder.Services.AddScoped<StudentPdfService>();

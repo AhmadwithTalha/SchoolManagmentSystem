@@ -22,9 +22,24 @@
         <a asp-action="ExportExcel" class="btn btn-success">
             <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export Excel
         </a>
+
+        <form asp-action="ImportTeacherExcel" method="post" enctype="multipart/form-data" class="d-inline">
+            <input type="file" name="file" accept=".xlsx, .xls" required />
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-file-earmark-arrow-up-fill"></i> Import Teachers
+            </button>
+        </form>
     </div>
 </div>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@Html.Raw(TempData["Error"])</div>
+}
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
 
 <table id="teacherTable" class="table table-bordered table-striped">
     <thead>

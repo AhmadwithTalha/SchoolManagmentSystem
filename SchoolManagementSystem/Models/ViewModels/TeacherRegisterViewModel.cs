@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManagementSystem.Models.ViewModels
@@ -37,8 +38,9 @@ namespace SchoolManagementSystem.Models.ViewModels
         public string ConfirmPassword { get; set; } = string.Empty;
 
         // For normal file upload
-        [Required(ErrorMessage = "Profile Image is required")]
-        public IFormFile ProfileImageFile { get; set; } = null!;
+        //[Required(ErrorMessage = "Profile Image is required")]
+        [ValidateNever]
+        public IFormFile? ProfileImageFile { get; set; }
 
         // For live webcam capture (base64 string)
         public string? ProfileImageBase64 { get; set; }

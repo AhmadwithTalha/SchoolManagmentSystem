@@ -79,7 +79,8 @@ namespace SchoolManagementSystem.Controllers
                 model.CountryId = student.CountryId;
                 model.CityId = student.CityId;
                 model.Address = student.Address;
-                model.ExistingProfileImage = student.ProfileImage;
+                //model.ExistingProfileImage = student.ProfileImage;
+
             }
 
             model.Countries = await _context.Countries
@@ -115,7 +116,11 @@ namespace SchoolManagementSystem.Controllers
                 return View(model);
             }
 
-            string profileFileName = model.ExistingProfileImage;
+            string? profileFileName = model.ExistingProfileImage ?? null;
+            if (string.IsNullOrEmpty(profileFileName))
+            {
+                profileFileName = "default-user.png";
+            }
 
             // Image handling
             if (model.ProfileImageFile != null)
@@ -139,7 +144,7 @@ namespace SchoolManagementSystem.Controllers
                 var student = new ApplicationUser
                 {
                     Id = Guid.NewGuid().ToString(),
-                    UserName = EncryptionHelper.Encrypt(model.Email),
+                    UserName = model.Email,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     FirstName = model.FirstName,
@@ -239,6 +244,7 @@ namespace SchoolManagementSystem.Controllers
             return File(pdfBytes, "application/pdf", "Students_Report.pdf");
         }
 
+        [Authorize]
         public IActionResult ExportExcel()
         {
             // 1️⃣ Get all students
@@ -323,6 +329,118 @@ namespace SchoolManagementSystem.Controllers
             return File(excelBytes,
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         "Student_Report.xlsx");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportStudentExcel(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                TempData["Error"] = "Please select an Excel file.";
+                return RedirectToAction("Index");
+            }
+
+            var errors = new List<string>();
+
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+
+            using var package = new ExcelPackage(stream);
+            var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+            if (worksheet == null)
+            {
+                TempData["Error"] = "Excel file is empty or invalid.";
+                return RedirectToAction("Index");
+            }
+
+            int rowCount = worksheet.Dimension.Rows;
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                string firstName = worksheet.Cells[row, 1].Text.Trim();
+                string lastName = worksheet.Cells[row, 2].Text.Trim();
+                string email = worksheet.Cells[row, 3].Text.Trim();
+                string phone = worksheet.Cells[row, 4].Text.Trim();
+                string cityName = worksheet.Cells[row, 5].Text.Trim();
+                string countryName = worksheet.Cells[row, 6].Text.Trim();
+                string address = worksheet.Cells[row, 7].Text.Trim();
+                string password = worksheet.Cells[row, 8].Text.Trim();
+
+                // Required fields
+                if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) ||
+                    string.IsNullOrEmpty(email) || string.IsNullOrEmpty(phone) ||
+                    string.IsNullOrEmpty(cityName) || string.IsNullOrEmpty(countryName))
+                {
+                    errors.Add($"Row {row}: Missing required field(s).");
+                    continue;
+                }
+
+                // Email unique check
+                if (await _userManager.Users.AnyAsync(u => u.Email == email))
+                {
+                    errors.Add($"Row {row}: Email '{email}' already exists.");
+                    continue;
+                }
+
+                // Country check
+                var country = await _context.Countries.FirstOrDefaultAsync(c => c.Name.ToLower() == countryName.ToLower());
+                if (country == null)
+                {
+                    errors.Add($"Row {row}: Country '{countryName}' does not exist.");
+                    continue;
+                }
+
+                // City check
+                var city = await _context.Cities.FirstOrDefaultAsync(c =>
+                    c.Name.ToLower() == cityName.ToLower() && c.CountryId == country.Id);
+                if (city == null)
+                {
+                    errors.Add($"Row {row}: City '{cityName}' does not exist in country '{countryName}'.");
+                    continue;
+                }
+
+                // Default password if missing or too weak
+                if (string.IsNullOrEmpty(password) || password.Length < 6)
+                    password = "Student@123";
+
+                string profileImage = "default-user.png";
+
+                var student = new ApplicationUser
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = email,
+                    Email = email,
+                    PhoneNumber = phone,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    CountryId = country.Id,
+                    CityId = city.Id,
+                    Address = address,
+                    ProfileImage = profileImage
+                };
+
+                var result = await _userManager.CreateAsync(student, password);
+
+                if (!result.Succeeded)
+                {
+                    errors.Add($"Row {row}: Could not create '{email}'. " +
+                               string.Join(", ", result.Errors.Select(e => e.Description)));
+                    continue;
+                }
+
+                if (!await _roleManager.RoleExistsAsync("Student"))
+                    await _roleManager.CreateAsync(new IdentityRole("Student"));
+
+                await _userManager.AddToRoleAsync(student, "Student");
+            }
+
+            if (errors.Any())
+                TempData["Error"] = string.Join("<br/>", errors);
+            else
+                TempData["Success"] = "Students imported successfully!";
+
+            return RedirectToAction("Index");
         }
 
 

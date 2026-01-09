@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SchoolManagementSystem.Helpers;
 using System.ComponentModel.DataAnnotations;
@@ -17,11 +18,11 @@ namespace SchoolManagementSystem.Models.ViewModels
 
         [RequiredIfCreating] // required only on create
         [DataType(DataType.Password)]
-        public string? Password { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
 
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
-        public string? ConfirmPassword { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]
@@ -37,9 +38,9 @@ namespace SchoolManagementSystem.Models.ViewModels
         public int CityId { get; set; }
 
         public string? Address { get; set; }
-
-        public IFormFile ProfileImageFile { get; set; }
-        public string? ProfileImageBase64 { get; set; }
+        [ValidateNever]
+        public IFormFile? ProfileImageFile { get; set; }
+        public string? ProfileImageBase64 { get; set; } 
         public string? ExistingProfileImage { get; set; }
 
         public List<SelectListItem> Countries { get; set; } = new List<SelectListItem>();

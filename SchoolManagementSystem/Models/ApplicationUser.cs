@@ -16,7 +16,7 @@ namespace SchoolManagementSystem.Models
         public int EncryptedCityId { get; set; } 
         public string EncryptedAddress { get; set; } = string.Empty;
         public string EncryptedPhoneNumber { get; set; } = string.Empty;
-        public string ProfileImage { get; set; } = string.Empty;
+        public string? ProfileImage { get; set; }
         public bool IsDeleted { get; set; } = false;
 
 

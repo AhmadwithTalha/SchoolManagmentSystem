@@ -125,8 +125,8 @@ public class TeacherController : Controller
         }
         var user = new ApplicationUser
 
-                {
-                    Id = Guid.NewGuid().ToString(),
+        {
+            Id = Guid.NewGuid().ToString(),
             UserName = model.Email,
             Email = model.Email,
             PhoneNumber = model.PhoneNumber,
@@ -382,4 +382,121 @@ public class TeacherController : Controller
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     "Teachers_Report.xlsx");
     }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportTeacherExcel(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            TempData["Error"] = "Please select an Excel file.";
+            return RedirectToAction("Index");
+        }
+
+        var errors = new List<string>();
+
+        using var stream = new MemoryStream();
+        await file.CopyToAsync(stream);
+
+        using var package = new ExcelPackage(stream);
+        var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+        if (worksheet == null)
+        {
+            TempData["Error"] = "Excel file is empty or invalid.";
+            return RedirectToAction("Index");
+        }
+
+        int rowCount = worksheet.Dimension.Rows;
+
+        for (int row = 2; row <= rowCount; row++) // header is row 1
+        {
+            string firstName = worksheet.Cells[row, 1].Text.Trim();
+            string lastName = worksheet.Cells[row, 2].Text.Trim();
+            string email = worksheet.Cells[row, 3].Text.Trim();
+            string phone = worksheet.Cells[row, 4].Text.Trim();
+            string cityName = worksheet.Cells[row, 5].Text.Trim();
+            string countryName = worksheet.Cells[row, 6].Text.Trim();
+            string address = worksheet.Cells[row, 7].Text.Trim();
+            string password = worksheet.Cells[row, 8].Text.Trim();
+
+            // Skip if required fields missing
+            if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) ||
+                string.IsNullOrEmpty(email) || string.IsNullOrEmpty(phone) ||
+                string.IsNullOrEmpty(cityName) || string.IsNullOrEmpty(countryName) ||
+                string.IsNullOrEmpty(address))
+            {
+                errors.Add($"Row {row}: Missing required field(s).");
+                continue;
+            }
+
+            // Email must be unique
+            if (await _userManager.Users.AnyAsync(u => u.Email == email))
+            {
+                errors.Add($"Row {row}: Email '{email}' already exists.");
+                continue;
+            }
+
+            // Country check
+            var country = await _context.Countries.FirstOrDefaultAsync(c => c.Name.ToLower() == countryName.ToLower());
+            if (country == null)
+            {
+                errors.Add($"Row {row}: Country '{countryName}' does not exist.");
+                continue;
+            }
+
+            // City check
+            var city = await _context.Cities.FirstOrDefaultAsync(c =>
+                c.Name.ToLower() == cityName.ToLower() && c.CountryId == country.Id);
+            if (city == null)
+            {
+                errors.Add($"Row {row}: City '{cityName}' does not exist in country '{countryName}'.");
+                continue;
+            }
+
+            // Default password if empty
+            if (string.IsNullOrEmpty(password))
+                password = "Teacher@123"; // fallback
+
+            // Default profile image
+            string profileImage = "default-user.png";
+
+            // Create teacher
+            var teacher = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = email, // email as username
+                Email = email,
+                PhoneNumber = phone,
+                FirstName = firstName,
+                LastName = lastName,
+                CountryId = country.Id,
+                CityId = city.Id,
+                Address = address,
+                ProfileImage = profileImage
+            };
+
+            // Create user in Identity
+            var result = await _userManager.CreateAsync(teacher, password);
+            if (!result.Succeeded)
+            {
+                errors.Add($"Row {row}: Could not create user '{email}'. " +
+                           string.Join(", ", result.Errors.Select(e => e.Description)));
+                continue;
+            }
+
+            // Ensure Teacher role exists
+            if (!await _roleManager.RoleExistsAsync("Teacher"))
+                await _roleManager.CreateAsync(new IdentityRole("Teacher"));
+
+            // Assign Teacher role
+            await _userManager.AddToRoleAsync(teacher, "Teacher");
+        }
+
+        if (errors.Any())
+            TempData["Error"] = string.Join("<br/>", errors);
+        else
+            TempData["Success"] = "Teachers imported successfully!";
+
+        return RedirectToAction("Index");
+    }
+
 }
