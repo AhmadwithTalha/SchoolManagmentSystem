@@ -63,22 +63,7 @@ namespace SchoolManagementSystem.Controllers
 
             return View(model);
         }
-        [Authorize(Roles = "Principal")]
-        public async Task<IActionResult> ExportPdf()
-        {
-            var principals = await _context.Users
-                .Include(u => u.Country)
-                .Include(u => u.City)
-                .Where(u => !u.IsDeleted)
-                .Where(u => _context.UserRoles
-                    .Any(ur => ur.UserId == u.Id &&
-                               _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Principal")))
-                .ToListAsync();
-
-            var pdfBytes = _principlePdfService.GeneratePrinciplePdf(principals);
-
-            return File(pdfBytes, "application/pdf", "Principals_Report.pdf");
-        }
+      
 
 
     }

@@ -37,20 +37,6 @@ namespace SchoolManagementSystem.Controllers
             return View();
         }
 
-        // POST: Country/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create(Country country)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return View(country);
-
-        //    _context.Countries.Add(country);
-        //    await _context.SaveChangesAsync();
-
-        //    return RedirectToAction(nameof(Index));
-        //}
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Country country)
@@ -84,8 +70,7 @@ namespace SchoolManagementSystem.Controllers
 
             return View(country);
         }
-
-        // POST: Country/Edit
+        #region        // POST: Country/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Country country)
@@ -98,8 +83,7 @@ namespace SchoolManagementSystem.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // GET: Country/Delete/5
+        #endregion        // GET: Country/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var country = await _context.Countries.FindAsync(id);
@@ -195,8 +179,8 @@ namespace SchoolManagementSystem.Controllers
             );
         }
 
-     [HttpPost]
-    [ValidateAntiForgeryToken]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
     public async Task<IActionResult> ImportExcel(IFormFile excelFile)
     {
         if (excelFile == null || excelFile.Length == 0)

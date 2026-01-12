@@ -1,4 +1,0 @@
-C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\wwwroot\images\e4ac0e09-298c-4d25-9c59-e4fe5a77eb2e.png
-C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\wwwroot\images\f2d270b3-aba7-4eb1-b793-3f0c67c8b108.png
-C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\wwwroot\images\f65f6aed-4718-4c90-a3d6-5c70a590bedc.png
-C:\Users\Ahmad Talha\source\repos\SchoolManagementSystem\SchoolManagementSystem\wwwroot\images\f81c4315-12e5-41fc-9a6d-f1c62ee87537.png

@@ -13,7 +13,6 @@
                 <div class="card-body">
 
                     <div class="mb-4 text-center">
-                        @* <h4 class="fw-bold">Create Student</h4> *@
                         <p class="text-muted small">Enter student personal details</p>
                     </div>
 
@@ -123,6 +122,7 @@
             alert("Photo captured successfully!");
         });
 
+        // $('.CountryId').change(function () {
         $('#CountryId').change(function () {
             var countryId = $(this).val();
             $('#CityId').empty().append('<option value="">-- Select City --</option>');

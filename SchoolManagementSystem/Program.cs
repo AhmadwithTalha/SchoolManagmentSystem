@@ -7,9 +7,6 @@ using OfficeOpenXml;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
-//ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
 // Add DB Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

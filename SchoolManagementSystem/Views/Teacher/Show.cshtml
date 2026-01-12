@@ -22,13 +22,9 @@
         <a asp-action="ExportExcel" class="btn btn-success">
             <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export Excel
         </a>
-
-        <form asp-action="ImportTeacherExcel" method="post" enctype="multipart/form-data" class="d-inline">
-            <input type="file" name="file" accept=".xlsx, .xls" required />
-            <button type="submit" class="btn btn-success">
-                <i class="bi bi-file-earmark-arrow-up-fill"></i> Import Teachers
-            </button>
-        </form>
+        <button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#importTeacherModal">
+            <i class="bi bi-upload"></i> Import Teachers
+        </button>
     </div>
 </div>
 @if (TempData["Error"] != null)
@@ -93,6 +89,30 @@
         }
     </tbody>
 </table>
+<!-- Import Teachers Modal -->
+<div class="modal fade" id="importTeacherModal" tabindex="-1" aria-labelledby="importTeacherLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Form for Excel Upload -->
+            <form asp-action="ImportTeacherExcel" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importTeacherLabel">Import Teachers Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" name="file" accept=".xlsx, .xls" class="form-control" required />
+                    <small class="text-muted">Only Excel (.xlsx or .xls) files are allowed.</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-upload"></i> Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
 

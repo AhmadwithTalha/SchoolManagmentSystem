@@ -13,15 +13,19 @@ using System.IO;
 [Authorize(Roles = "Principal")]
 public class CityController : Controller
 {
+    #region Fields and Constructor
     private readonly ApplicationDbContext _context;
     private readonly CityPdfService _cityPdfService;
+
     public CityController(ApplicationDbContext context, CityPdfService cityPdfService)
     {
         _context = context;
         _cityPdfService = cityPdfService;
     }
+    #endregion
 
-    // INDEX
+    #region Index / List All Cities
+    // Show list of cities along with their countries
     public async Task<IActionResult> Index()
     {
         var cities = await _context.Cities
@@ -30,14 +34,17 @@ public class CityController : Controller
 
         return View(cities);
     }
+    #endregion
 
-    //  CREATE
+    #region Create New City
+    // Show create form
     public IActionResult Create()
     {
         ViewBag.Countries = new SelectList(_context.Countries, "Id", "Name");
         return View();
     }
 
+    // Handle create form submission
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CityVIewModel city)
@@ -47,21 +54,22 @@ public class CityController : Controller
             ViewBag.Countries = new SelectList(_context.Countries, "Id", "Name", city.CountryId);
             return View(city);
         }
-        City model = new City();
-        if (city != null)
-        {
-            model.Name = city.Name;
-            model.CountryId = city.CountryId;
-        }
 
+        var model = new City
+        {
+            Name = city.Name,
+            CountryId = city.CountryId
+        };
 
         _context.Cities.Add(model);
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
     }
+    #endregion
 
-    // ================= EDIT =================
+    #region Edit City
+    // Show edit form
     public async Task<IActionResult> Edit(int id)
     {
         var city = await _context.Cities.FindAsync(id);
@@ -71,6 +79,7 @@ public class CityController : Controller
         return View(city);
     }
 
+    // Handle edit form submission
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(City city)
@@ -86,8 +95,10 @@ public class CityController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+    #endregion
 
-    // ================= DELETE =================
+    #region Delete City
+    // Show delete confirmation page
     public async Task<IActionResult> Delete(int id)
     {
         var city = await _context.Cities
@@ -99,6 +110,7 @@ public class CityController : Controller
         return View(city);
     }
 
+    // Handle delete confirmation
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
@@ -109,7 +121,9 @@ public class CityController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+    #endregion
 
+    #region Export Cities as PDF
     public async Task<IActionResult> ExportPdf()
     {
         var cities = await _context.Cities
@@ -124,22 +138,22 @@ public class CityController : Controller
             "Cities_Report.pdf"
         );
     }
+    #endregion
+
+    #region Export Cities as Excel
     [Authorize] // optional
     public IActionResult ExportExcel()
     {
-        // 1️⃣ Get city data WITH country
+        // Get cities with country
         var cities = _context.Cities
-                             .Include(c => c.Country) // 🔥 IMPORTANT
+                             .Include(c => c.Country)
                              .OrderBy(c => c.Name)
                              .ToList();
 
-        // 2️⃣ Create Excel file in memory
         using var package = new ExcelPackage();
-
-        // 3️⃣ Create worksheet
         var worksheet = package.Workbook.Worksheets.Add("Cities");
 
-        // 4️⃣ Title
+        // Title
         worksheet.Cells["A1:C1"].Merge = true;
         worksheet.Cells["A1"].Value = "City Reports";
         worksheet.Cells["A1"].Style.Font.Size = 16;
@@ -148,7 +162,7 @@ public class CityController : Controller
         worksheet.Cells["A1"].Style.Fill.PatternType = ExcelFillStyle.Solid;
         worksheet.Cells["A1"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
 
-        // 5️⃣ Column Headers
+        // Column headers
         worksheet.Cells["A3"].Value = "Sr #";
         worksheet.Cells["B3"].Value = "City Name";
         worksheet.Cells["C3"].Value = "Country Name";
@@ -158,7 +172,7 @@ public class CityController : Controller
         worksheet.Cells["A3:C3"].Style.Fill.BackgroundColor.SetColor(Color.LightBlue);
         worksheet.Cells["A3:C3"].Style.Border.BorderAround(ExcelBorderStyle.Thin);
 
-        // 6️⃣ Data Rows
+        // Data rows
         int row = 4;
         int sr = 1;
 
@@ -166,16 +180,13 @@ public class CityController : Controller
         {
             worksheet.Cells[row, 1].Value = sr++;
             worksheet.Cells[row, 2].Value = city.Name;
-            worksheet.Cells[row, 3].Value = city.Country?.Name; // ⭐ KEY LINE
+            worksheet.Cells[row, 3].Value = city.Country?.Name;
 
             worksheet.Cells[row, 1, row, 3].Style.Border.BorderAround(ExcelBorderStyle.Thin);
             row++;
         }
 
-        // 7️⃣ Auto-fit columns
         worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
-
-        // 8️⃣ Download Excel
         var excelBytes = package.GetAsByteArray();
 
         return File(
@@ -184,6 +195,9 @@ public class CityController : Controller
             "City_Report.xlsx"
         );
     }
+    #endregion
+
+    #region Import Cities from Excel
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ImportExcel(IFormFile excelFile)
@@ -200,18 +214,17 @@ public class CityController : Controller
         using (var stream = new MemoryStream())
         {
             await excelFile.CopyToAsync(stream);
-
             using (var package = new ExcelPackage(stream))
             {
-                var worksheet = package.Workbook.Worksheets[0]; // first sheet
+                var worksheet = package.Workbook.Worksheets[0];
                 int rowCount = worksheet.Dimension.End.Row;
 
-                for (int row = 2; row <= rowCount; row++) // row 1 = header
+                for (int row = 2; row <= rowCount; row++)
                 {
                     string cityName = worksheet.Cells[row, 1].Text.Trim();
                     string countryName = worksheet.Cells[row, 2].Text.Trim();
 
-                    // 1️⃣ Validate empty
+                    // Validate empty
                     if (string.IsNullOrEmpty(cityName))
                     {
                         errors.Add($"Row {row}: City Name is empty");
@@ -223,7 +236,7 @@ public class CityController : Controller
                         continue;
                     }
 
-                    // 2️⃣ Find Country
+                    // Find Country
                     var country = _context.Countries
                         .FirstOrDefault(c => c.Name.ToLower() == countryName.ToLower());
 
@@ -233,7 +246,7 @@ public class CityController : Controller
                         continue;
                     }
 
-                    // 3️⃣ Check duplicate city in same country
+                    // Check duplicate city
                     bool cityExists = _context.Cities
                         .Any(c => c.Name.ToLower() == cityName.ToLower() && c.CountryId == country.Id);
 
@@ -243,7 +256,7 @@ public class CityController : Controller
                         continue;
                     }
 
-                    // 4️⃣ Save new city
+                    // Save new city
                     var newCity = new City
                     {
                         Name = cityName,
@@ -253,14 +266,15 @@ public class CityController : Controller
                     createdCount++;
                 }
 
-                // Save all valid rows
                 await _context.SaveChangesAsync();
             }
         }
+
         TempData["Success"] = $"{createdCount} cities imported successfully.";
         if (errors.Count > 0)
             TempData["Errors"] = string.Join("<br/>", errors);
 
         return RedirectToAction(nameof(Index));
     }
+    #endregion
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,27 +11,26 @@ using SchoolManagementSystem.Services;
 
 namespace SchoolManagementSystem.Controllers
 {
-
-  
     public class AccountController : Controller
     {
+        #region Fields
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IWebHostEnvironment _environment;
         private readonly ApplicationDbContext _context;
         private readonly PrinciplePdfService _principlePdfService;
+        #endregion
 
+        #region Constructor
         public AccountController(
-            UserManager<ApplicationUser> userManager,  
+            UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager,
             IWebHostEnvironment environment,
             ApplicationDbContext context,
             PrinciplePdfService principlePdfService
-            )
-
-
+        )
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -39,6 +39,9 @@ namespace SchoolManagementSystem.Controllers
             _context = context;
             _principlePdfService = principlePdfService;
         }
+        #endregion
+
+        #region GET Actions
 
         [HttpGet]
         public IActionResult Register()
@@ -63,6 +66,84 @@ namespace SchoolManagementSystem.Controllers
             return Json(cities);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var userId = _userManager.GetUserId(User);
+            var user = await _context.Users
+                .Include(u => u.Country)
+                .Include(u => u.City)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                return RedirectToAction("Register");
+
+            return View(user);
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Principal"))
+                    return RedirectToAction("Dashboard", "Home");
+
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
+       
+
+        [HttpGet]
+        public IActionResult DeleteProfile()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var model = new PrincipleUpdateProfileViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                CountryId = user.CountryId,
+                CityId = user.CityId,
+                Address = user.Address,
+                ExistingProfileImage = user.ProfileImage,
+
+                Countries = await _context.Countries
+            .Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToListAsync(),
+
+                Cities = await _context.Cities
+            .Where(c => c.CountryId == user.CountryId)
+            .Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToListAsync()
+            };
+
+            return View(model);
+        }
+
+        #endregion
+
+        #region POST Actions
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(PrincipleRegisterViewModel model)
@@ -70,14 +151,14 @@ namespace SchoolManagementSystem.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Create uploads folder if not exist
+            // --- File upload folder ---
             string uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
             string profileFileName = string.Empty;
 
-            // Save file upload if present
+            // Save uploaded file
             if (model.ProfileImageFile != null)
             {
                 profileFileName = Guid.NewGuid() + Path.GetExtension(model.ProfileImageFile.FileName);
@@ -87,15 +168,16 @@ namespace SchoolManagementSystem.Controllers
                     await model.ProfileImageFile.CopyToAsync(fileStream);
                 }
             }
+
             if (model.ProfileImageFile == null && string.IsNullOrEmpty(model.ProfileImageBase64))
             {
                 ModelState.AddModelError("", "Profile image is required (either upload or capture).");
                 return View(model);
             }
 
+            // Repopulate dropdowns if invalid
             if (!ModelState.IsValid)
             {
-                // Repopulate countries and cities
                 model.Countries = _context.Countries
                                           .Select(c => new SelectListItem
                                           {
@@ -116,10 +198,7 @@ namespace SchoolManagementSystem.Controllers
                 return View(model);
             }
 
-
-
-
-            // Save base64 image if present (live webcam)
+            // Save base64 image if exists
             if (!string.IsNullOrEmpty(model.ProfileImageBase64))
             {
                 string base64 = model.ProfileImageBase64.Split(',')[1];
@@ -165,40 +244,7 @@ namespace SchoolManagementSystem.Controllers
 
             TempData["SuccessMessage"] = "Registration successful!";
             return RedirectToAction("Login", "Account");
-
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Profile()
-        {
-            var userId = _userManager.GetUserId(User);
-
-            var user = await _context.Users
-                .Include(u => u.Country)
-                .Include(u => u.City)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-                return RedirectToAction("Register");
-
-            return View(user);
-        }
-
-        [HttpGet]
-        public IActionResult Login()
-        {
-            // If already logged in, DO NOT show login page
-            if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                if (User.IsInRole("Principal"))
-                    return RedirectToAction("Dashboard", "Home");
-
-                return RedirectToAction("Index", "Home");
-            }
-
-            return View();
-        }
-
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -220,7 +266,6 @@ namespace SchoolManagementSystem.Controllers
             return View(model);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -233,46 +278,55 @@ namespace SchoolManagementSystem.Controllers
 
             return RedirectToAction("Login", "Account");
         }
-
-
         [Authorize]
         [HttpGet]
         public IActionResult ChangePassword()
         {
             return View();
         }
+
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
+            {
+                return Json(new { success = false, message = "Invalid input data." });
+            }
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
-                return RedirectToAction("Login");
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
 
-            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            var result = await _userManager.ChangePasswordAsync(
+                user,
+                model.CurrentPassword,
+                model.NewPassword
+            );
+
             if (!result.Succeeded)
             {
-                foreach (var err in result.Errors)
-                    ModelState.AddModelError("", err.Description);
-                return View(model);
+                return Json(new
+                {
+                    success = false,
+                    message = string.Join(", ", result.Errors.Select(e => e.Description))
+                });
             }
 
             await _signInManager.RefreshSignInAsync(user);
 
-            TempData["SuccessMessage"] = "Password changed successfully!";
-            return RedirectToAction("Profile");
+            return Json(new
+            {
+                success = true,
+                message = "Password changed successfully!",
+                redirectUrl = Url.Action("Profile")
+            });
         }
-        
-        [HttpGet]
-        public IActionResult DeleteProfile()
-        {
-            return View();
-        }
-        
+
+
         [HttpPost, ActionName("DeleteProfile")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProfileConfirmed()
@@ -294,45 +348,6 @@ namespace SchoolManagementSystem.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // ================= UPDATE PROFILE =================
-        
-        [HttpGet]
-        public async Task<IActionResult> UpdateProfile()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login");
-
-            var model = new PrincipleUpdateProfileViewModel
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                CountryId = user.CountryId,
-                CityId = user.CityId,
-                Address = user.Address,
-                ExistingProfileImage = user.ProfileImage,
-
-                Countries = await _context.Countries
-            .Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.Name
-            }).ToListAsync(),
-
-                Cities = await _context.Cities
-            .Where(c => c.CountryId == user.CountryId)
-            .Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.Name
-            }).ToListAsync()
-            };
-
-            return View(model);
-        }
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProfile(PrincipleUpdateProfileViewModel model)
@@ -344,11 +359,11 @@ namespace SchoolManagementSystem.Controllers
             if (!ModelState.IsValid)
             {
                 model.Countries = await _context.Countries
-            .Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.Name
-            }).ToListAsync();
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = c.Name
+                    }).ToListAsync();
 
                 model.Cities = await _context.Cities
                     .Where(c => c.CountryId == model.CountryId)
@@ -357,11 +372,12 @@ namespace SchoolManagementSystem.Controllers
                         Value = c.Id.ToString(),
                         Text = c.Name
                     }).ToListAsync();
+
                 model.ExistingProfileImage = user.ProfileImage;
                 return View(model);
             }
 
-            // ===== UPDATE TEXT DATA (ENCRYPTED SAME AS REGISTER) =====
+            // Update text fields
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.PhoneNumberPublic = model.PhoneNumber;
@@ -373,34 +389,24 @@ namespace SchoolManagementSystem.Controllers
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
-            // ===== IMAGE DECISION LOGIC =====
-            // Priority: Live Capture > Upload > Existing
-
-            // 1️⃣ LIVE CAPTURE (TOP PRIORITY)
+            // Image logic
             if (!string.IsNullOrEmpty(model.ProfileImageBase64))
             {
                 string base64Data = model.ProfileImageBase64.Split(',')[1];
                 byte[] bytes = Convert.FromBase64String(base64Data);
-
                 string newFileName = Guid.NewGuid() + ".png";
                 string filePath = Path.Combine(uploadsFolder, newFileName);
-
                 await System.IO.File.WriteAllBytesAsync(filePath, bytes);
-
                 user.ProfileImage = newFileName;
             }
-            // 2️⃣ FILE UPLOAD
             else if (model.ProfileImageFile != null && model.ProfileImageFile.Length > 0)
             {
                 string newFileName = Guid.NewGuid() + Path.GetExtension(model.ProfileImageFile.FileName);
                 string filePath = Path.Combine(uploadsFolder, newFileName);
-
                 using var fs = new FileStream(filePath, FileMode.Create);
                 await model.ProfileImageFile.CopyToAsync(fs);
-
                 user.ProfileImage = newFileName;
             }
-            // 3️⃣ ELSE → KEEP OLD IMAGE (DO NOTHING)
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -416,23 +422,6 @@ namespace SchoolManagementSystem.Controllers
             return RedirectToAction("Profile");
         }
 
-        //public async Task<IActionResult> ExportPdf()
-        //{
-        //    var principals = await _context.Users
-        //        .Include(u => u.Country)
-        //        .Include(u => u.City)
-        //        .Where(u => !u.IsDeleted) // Only active
-        //        .Where(u => _context.UserRoles
-        //            .Any(ur => ur.UserId == u.Id &&
-        //                       _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == "Principle")))
-        //        .ToListAsync();
-
-        //    var pdfBytes = _principlePdfService.GeneratePrinciplePdf(principals);
-
-        //    return File(pdfBytes, "application/pdf", "Principals_Report.pdf");
-        //}
-
-
-
+        #endregion
     }
 }
