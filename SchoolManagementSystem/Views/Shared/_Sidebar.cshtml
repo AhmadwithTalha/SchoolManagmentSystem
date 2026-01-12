@@ -1,28 +1,32 @@
 ﻿<aside class="col-md-3 col-lg-2 bg-white shadow-sm min-vh-100">
     <div class="p-3">
-        <h6 class="text-muted fw-bold">Management</h6>
+        @* <h6 class="text-muted fw-bold">Management</h6> *@
 
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" asp-controller="Student" asp-action="Index">
-                    Manage Students
-                </a>
+               
             </li>
             <li class="nav-item">
-                
 
-                <a class="nav-link" asp-controller="Teacher" asp-action="Index">
-                    
-                    Manage Teachers
-                </a>
-                <a class="nav-link" asp-controller="Country" asp-action="Index">
+                @if (User.IsInRole("Principal"))
+                {
+                    <a class="nav-link" asp-controller="Student" asp-action="Index">
+                        Manage Students
+                    </a>
+                    <a class="nav-link" asp-controller="Teacher" asp-action="Index">
 
-                    Manage Country
-                </a>
-                <a class="nav-link" asp-controller="City" asp-action="Index">
+                        Manage Teachers
+                    </a>
+                    <a class="nav-link" asp-controller="Country" asp-action="Index">
 
-                    Manage City
-                </a>
+                        Manage Country
+                    </a>
+                    <a class="nav-link" asp-controller="City" asp-action="Index">
+
+                        Manage City
+                    </a>
+                }
+               
             </li>
         </ul>
     </div>

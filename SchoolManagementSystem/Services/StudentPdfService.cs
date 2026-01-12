@@ -68,17 +68,35 @@ namespace SchoolManagementSystem.Services
                     imageCell.HorizontalAlignment = Element.ALIGN_CENTER;
                     imageCell.VerticalAlignment = Element.ALIGN_MIDDLE;
 
-                    if (!string.IsNullOrEmpty(student.ProfileImage))
+
+                    if (!string.IsNullOrEmpty(student.ProfileImage) &&
+    student.ProfileImage != "default-user.png")
                     {
-                        string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", student.ProfileImage);
+                        string imagePath = Path.Combine(
+                            _webHostEnvironment.WebRootPath,
+                            "images",
+                            student.ProfileImage
+                        );
+
                         if (File.Exists(imagePath))
                         {
-                            iTextSharp.text.Image profileImage = iTextSharp.text.Image.GetInstance(imagePath);
-                            profileImage.ScaleToFit(60f, 60f);
-                            profileImage.Alignment = Element.ALIGN_CENTER;
-                            imageCell.AddElement(profileImage);
+                            try
+                            {
+                                using (var fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                                {
+                                    var profileImage = iTextSharp.text.Image.GetInstance(fs);
+                                    profileImage.ScaleToFit(60f, 60f);
+                                    profileImage.Alignment = Element.ALIGN_CENTER;
+                                    imageCell.AddElement(profileImage);
+                                }
+                            }
+                            catch
+                            {
+                                // silently ignore broken images
+                            }
                         }
                     }
+
 
                     table.AddCell(imageCell); // ✅ Add imageCell, not cell
 

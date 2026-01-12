@@ -303,19 +303,24 @@ namespace SchoolManagementSystem.Controllers
                 worksheet.Cells[row, 7].Value = student.Country?.Name;
                 worksheet.Cells[row, 8].Value = student.Address;
 
-                // Profile Image
-                if (!string.IsNullOrEmpty(student.ProfileImage))
+            
+                if (!string.IsNullOrEmpty(student.ProfileImage) &&
+    student.ProfileImage != "default-user.png")
                 {
                     string imagePath = Path.Combine(wwwrootPath, "images", student.ProfileImage);
+
                     if (System.IO.File.Exists(imagePath))
                     {
-                        Image img = Image.FromFile(imagePath); // load image
-                        var picture = worksheet.Drawings.AddPicture($"img{row}", img);
-                        picture.SetPosition(row - 1, 5, 8, 5); // rowIndex-1, offset, colIndex=I(9)
-                        picture.SetSize(50, 50); // Resize to fit
-                        worksheet.Row(row).Height = 40; // Increase row height
+                        using (var img = Image.FromFile(imagePath))
+                        {
+                            var picture = worksheet.Drawings.AddPicture($"img{row}", img);
+                            picture.SetPosition(row - 1, 5, 8, 5);
+                            picture.SetSize(50, 50);
+                            worksheet.Row(row).Height = 40;
+                        }
                     }
                 }
+
 
                 worksheet.Cells[row, 1, row, 8].Style.Border.BorderAround(ExcelBorderStyle.Thin);
                 row++;
@@ -404,7 +409,7 @@ namespace SchoolManagementSystem.Controllers
                 if (string.IsNullOrEmpty(password) || password.Length < 6)
                     password = "Student@123";
 
-                string profileImage = "default-user.png";
+                string profileImage = "default-user.jpg";
 
                 var student = new ApplicationUser
                 {

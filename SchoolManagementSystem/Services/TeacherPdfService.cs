@@ -68,17 +68,45 @@ namespace SchoolManagementSystem.Services
                     imageCell.HorizontalAlignment = Element.ALIGN_CENTER;
                     imageCell.VerticalAlignment = Element.ALIGN_MIDDLE;
 
-                    if (!string.IsNullOrEmpty(teacher.ProfileImage))
+                    //if (!string.IsNullOrEmpty(teacher.ProfileImage))
+                    //{
+                    //    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", teacher.ProfileImage);
+                    //    if (File.Exists(imagePath))
+                    //    {
+                    //        iTextSharp.text.Image profileImage = iTextSharp.text.Image.GetInstance(imagePath);
+                    //        profileImage.ScaleToFit(60f, 60f);
+                    //        profileImage.Alignment = Element.ALIGN_CENTER;
+                    //        imageCell.AddElement(profileImage);
+                    //    }
+                    //}
+                    if (!string.IsNullOrEmpty(teacher.ProfileImage) &&
+    teacher.ProfileImage != "default-user.png")
                     {
-                        string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", teacher.ProfileImage);
+                        string imagePath = Path.Combine(
+                            _webHostEnvironment.WebRootPath,
+                            "images",
+                            teacher.ProfileImage
+                        );
+
                         if (File.Exists(imagePath))
                         {
-                            iTextSharp.text.Image profileImage = iTextSharp.text.Image.GetInstance(imagePath);
-                            profileImage.ScaleToFit(60f, 60f);
-                            profileImage.Alignment = Element.ALIGN_CENTER;
-                            imageCell.AddElement(profileImage);
+                            try
+                            {
+                                using (var fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                                {
+                                    var profileImage = iTextSharp.text.Image.GetInstance(fs);
+                                    profileImage.ScaleToFit(60f, 60f);
+                                    profileImage.Alignment = Element.ALIGN_CENTER;
+                                    imageCell.AddElement(profileImage);
+                                }
+                            }
+                            catch
+                            {
+                                // ignore invalid image
+                            }
                         }
                     }
+
 
                     table.AddCell(imageCell);
 

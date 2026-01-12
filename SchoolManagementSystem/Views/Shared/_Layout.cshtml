@@ -31,10 +31,13 @@
         <div class="row">
 
             @* Sidebar ONLY for Principal *@
-            @if (User.IsInRole("Principal"))
+            @* @if (User.IsInRole("Principal"))
             {
                 <partial name="_Sidebar" />
-            }
+            } *@
+               
+                    <partial name="_Sidebar" />
+
 
             @* <main class="col px-4 py-4"> *@
                 <main class="col-12 col-md-9 col-lg-10 px-4 py-4">

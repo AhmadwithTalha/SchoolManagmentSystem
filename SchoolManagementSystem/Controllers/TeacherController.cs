@@ -301,7 +301,7 @@ public class TeacherController : Controller
     {
         // 1️⃣ Get all students
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-        var students = _context.Users
+        var teachers = _context.Users
                                .Where(u => u.IsDeleted == false && _context.UserRoles
                                .Any(r => r.UserId == u.Id && r.RoleId == _context.Roles
                                .FirstOrDefault(role => role.Name == "Teacher").Id))
@@ -344,30 +344,34 @@ public class TeacherController : Controller
         int sr = 1;
         string wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-        foreach (var student in students)
+        foreach (var teacher in teachers)
         {
             worksheet.Cells[row, 1].Value = sr++;
-            worksheet.Cells[row, 2].Value = student.FirstName; // decrypted
-            worksheet.Cells[row, 3].Value = student.LastName;
-            worksheet.Cells[row, 4].Value = student.Email;
-            worksheet.Cells[row, 5].Value = student.PhoneNumberPublic;
-            worksheet.Cells[row, 6].Value = student.City?.Name;
-            worksheet.Cells[row, 7].Value = student.Country?.Name;
-            worksheet.Cells[row, 8].Value = student.Address;
+            worksheet.Cells[row, 2].Value = teacher.FirstName; // decrypted
+            worksheet.Cells[row, 3].Value = teacher.LastName;
+            worksheet.Cells[row, 4].Value = teacher.Email;
+            worksheet.Cells[row, 5].Value = teacher.PhoneNumberPublic;
+            worksheet.Cells[row, 6].Value = teacher.City?.Name;
+            worksheet.Cells[row, 7].Value = teacher.Country?.Name;
+            worksheet.Cells[row, 8].Value = teacher.Address;
 
-            // Profile Image
-            if (!string.IsNullOrEmpty(student.ProfileImage))
+            if (!string.IsNullOrEmpty(teacher.ProfileImage) &&
+              teacher.ProfileImage != "default-user.png")
             {
-                string imagePath = Path.Combine(wwwrootPath, "images", student.ProfileImage);
+                string imagePath = Path.Combine(wwwrootPath, "images", teacher.ProfileImage);
+
                 if (System.IO.File.Exists(imagePath))
                 {
-                    Image img = Image.FromFile(imagePath); // load image
-                    var picture = worksheet.Drawings.AddPicture($"img{row}", img);
-                    picture.SetPosition(row - 1, 5, 8, 5); // rowIndex-1, offset, colIndex=I(9)
-                    picture.SetSize(50, 50); // Resize to fit
-                    worksheet.Row(row).Height = 40; // Increase row height
+                    using (var img = Image.FromFile(imagePath))
+                    {
+                        var picture = worksheet.Drawings.AddPicture($"img{row}", img);
+                        picture.SetPosition(row - 1, 5, 8, 5);
+                        picture.SetSize(50, 50);
+                        worksheet.Row(row).Height = 40;
+                    }
                 }
             }
+
 
             worksheet.Cells[row, 1, row, 8].Style.Border.BorderAround(ExcelBorderStyle.Thin);
             row++;
@@ -457,7 +461,7 @@ public class TeacherController : Controller
                 password = "Teacher@123"; // fallback
 
             // Default profile image
-            string profileImage = "default-user.png";
+            string profileImage = "default-user.jpg";
 
             // Create teacher
             var teacher = new ApplicationUser
